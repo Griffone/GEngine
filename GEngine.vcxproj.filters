@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Console">
+      <UniqueIdentifier>{192232dd-8b46-4ca1-8c64-3be6bb20657a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\console\Console.cpp">
+      <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\String.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\console\Dictionary.cpp">
+      <Filter>Console</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Global.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\Console.h">
+      <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\Dictionary.h">
+      <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\String.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\Command.h">
+      <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Commands.h">
+      <Filter>General</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
