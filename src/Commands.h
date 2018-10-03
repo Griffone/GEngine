@@ -11,6 +11,7 @@
 namespace Commands {
 
 	extern void exit(String &);
+	extern void vulkan(String &);
 
 	void listCommands(String &);
 	void help(String &);
@@ -27,11 +28,16 @@ namespace Commands {
 		"stops the program",
 		"Usage: exit : stop the program"
 	};
+	const Console::CommandData DATA_VULKAN = {
+		"starts vulkan window",
+		"Usage: vulkan : start vulkan window"
+	};
 
 	const Console::Command LIST[] = {
 		{ "exit", exit, DATA_EXIT },
 		{ "list", listCommands, DATA_LIST },
-		{ "help", help, DATA_HELP}
+		{ "help", help, DATA_HELP},
+		{ "vulkan", vulkan, DATA_VULKAN }
 	};
 
 	void listCommands(String &) {

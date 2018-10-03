@@ -12,6 +12,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{f09ee4f0-608b-4dfe-bc14-c3e145649a13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\console\Console.cpp">
@@ -25,6 +28,9 @@
     </ClCompile>
     <ClCompile Include="src\console\Dictionary.cpp">
       <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="src\App.cpp">
+      <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +50,9 @@
       <Filter>Console</Filter>
     </ClInclude>
     <ClInclude Include="src\Commands.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\App.h">
       <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>

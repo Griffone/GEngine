@@ -2,12 +2,19 @@
 	Initialization vector for the executable.
 */
 
+#include "App.h"
 #include "Commands.h"
 #include "console/Console.h"
 
+#include <thread>
+
+
 bool alive = true;
+App *app = nullptr;
 
 void initialize();
+void runVulkan();
+
 
 // Program starts here.
 int main() {
@@ -19,8 +26,9 @@ int main() {
 		Console::processLine(line);
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
+
 
 void initialize() {
 	for (int i = 0; i < sizeof(Commands::LIST) / sizeof(Console::Command); i++) {
@@ -33,4 +41,23 @@ void initialize() {
 
 void Commands::exit(String &) {
 	alive = false;
+}
+
+void Commands::vulkan(String &) {
+	// Atomic read operation
+	if (app == nullptr) {
+		std::thread thread = std::thread(runVulkan);
+		thread.detach();
+	}
+}
+
+void runVulkan() {
+	app = new App();
+	try {
+		app->loop();
+		std::cout << "vulkan app stopped" << std::endl;
+	} catch (const std::exception &e) {
+		std::cerr << e.what() << std::endl;
+	}
+	delete app;
 }
