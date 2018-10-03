@@ -6,11 +6,16 @@
 	The hope is to branch the engine into different areas and have a clean-ish discrimination between common and specific code.
 */
 
+#define VULKAN_APP_NAME			"Demo"
+#define VULKAN_ENGINE_NAME		"GEngine"
 #define VULKAN_WINDOW_TITLE		"Amazing Vulkan Demo"
 #define VULKAN_WINDOW_WIDTH		800
 #define VULKAN_WINDOW_HEIGHT	600
 
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+
+#include <vector>
 
 /// A Vulkan app
 class App {
@@ -20,6 +25,7 @@ public:
 
 	/// Enter the main loop
 	void loop();
+	std::vector<VkExtensionProperties> getSupportedExtensions() const;
 
 private:
 	// Helper functions
@@ -35,4 +41,5 @@ private:
 
 	// Private variables
 	GLFWwindow *window;
+	VkInstance instance;	// Vulkan library instance
 };

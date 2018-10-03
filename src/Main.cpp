@@ -3,10 +3,11 @@
 */
 
 #include "App.h"
-#include "Commands.h"
-#include "console/Console.h"
+#include "CommonCommands.h"
+#include "VulkanCommands.h"
 
 #include <thread>
+#include <iostream>
 
 
 bool alive = true;
@@ -15,7 +16,6 @@ App *app = nullptr;
 void initialize();
 void runVulkan();
 
-
 // Program starts here.
 int main() {
 	initialize();
@@ -23,7 +23,8 @@ int main() {
 	String line;
 	while (alive) {
 		std::getline(std::cin, line);
-		Console::processLine(line);
+		if (!Commands::processCommand(line, Commands::commonDict))
+			std::cout << "Unknown command, please use \"list\" to list supported commands.\n";
 	}
 
 	return EXIT_SUCCESS;
@@ -31,23 +32,41 @@ int main() {
 
 
 void initialize() {
-	for (int i = 0; i < sizeof(Commands::LIST) / sizeof(Console::Command); i++) {
-		Console::Command cmd = Commands::LIST[i];
-		Console::Dictionary::addCommand(cmd.command, cmd.function, cmd.data);
+	for (int i = 0; i < sizeof(Commands::COMMON_LIST) / sizeof(Command); i++) {
+		Command cmd = Commands::COMMON_LIST[i];
+		Commands::commonDict.addCommand(cmd.command, cmd.function, cmd.data);
 	}
-	Console::initialize();
-	std::cout << "Welcome to GEngine by Griffone.\nUse \"list\" to list supported commands.\n";
+	for (int i = 0; i < sizeof(Commands::VULKAN_LIST) / sizeof(Command); i++) {
+		Command cmd = Commands::VULKAN_LIST[i];
+		Commands::vulkanDict.addCommand(cmd.command, cmd.function, cmd.data);
+	}
+	std::cout << "Welcome to GEngine by Griffone." << std::endl;
+	std::cout << "Use \"list\" to list supported commands." << std::endl;
 }
 
 void Commands::exit(String &) {
 	alive = false;
 }
 
-void Commands::vulkan(String &) {
-	// Atomic read operation
+void Commands::vulkanStart(String &) {
+	// Atomic read operation, so no special adressing
 	if (app == nullptr) {
-		std::thread thread = std::thread(runVulkan);
+		std::thread thread(runVulkan);
+		std::cout << "Running Vulkan." << std::endl;
 		thread.detach();
+	} else {
+		std::cout << "A Vulkan instance is already running!" << std::endl;
+	}
+}
+
+void Commands::printExtensions(String &) {
+	if (app == nullptr)
+		std::cout << "Please make sure a Vulkan instance is running, by running \"vulkan start\" command." << std::endl;
+	else {
+		std::cout << "Available extensions:" << std::endl;
+		std::vector<VkExtensionProperties> extensions =  app->getSupportedExtensions();
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+			std::cout << it->extensionName << " v" << std::to_string(it->specVersion) << std::endl;
 	}
 }
 

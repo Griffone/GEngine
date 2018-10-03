@@ -160,19 +160,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
-    <ClCompile Include="src\console\Console.cpp" />
-    <ClCompile Include="src\console\Dictionary.cpp" />
+    <ClCompile Include="src\CommonCommands.cpp" />
+    <ClCompile Include="src\console\CommandDictionary.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\String.cpp" />
+    <ClCompile Include="src\VulkanCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
-    <ClInclude Include="src\Commands.h" />
+    <ClInclude Include="src\CommonCommands.h" />
     <ClInclude Include="src\console\Command.h" />
-    <ClInclude Include="src\console\Console.h" />
-    <ClInclude Include="src\console\Dictionary.h" />
+    <ClInclude Include="src\console\CommandDictionary.h" />
     <ClInclude Include="src\Global.h" />
     <ClInclude Include="src\String.h" />
+    <ClInclude Include="src\VulkanCommands.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

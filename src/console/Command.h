@@ -8,19 +8,17 @@
 
 #include "../String.h"
 
-namespace Console {
 
-	typedef void(*CommandFunction)(String & line);
+typedef void(*CommandFunction)(String & line);
 
-	struct CommandData {
-		const String			&description;	// Short description of what the command does
-		const String			&help;			// Appendix to description that provides more detailed explanation
-	};
+struct CommandData {
+	const String			&description;	// Short description of what the command does
+	const String			&help;			// Appendix to description that provides more detailed explanation
+};
 
-	struct Command {
-		const String			&command;
-		const CommandFunction	function;
-		const CommandData		&data;
-		//Command(const String &_command, const CommandFunction _function, const CommandData &_data) : command(_command), function(_function), data(_data) {};
-	};
-}
+struct Command {
+	const String			&command;
+	const CommandFunction	function;
+	const CommandData		&data;
+	//Command(const String &_command, const CommandFunction _function, const CommandData &_data) : command(_command), function(_function), data(_data) {};
+};
