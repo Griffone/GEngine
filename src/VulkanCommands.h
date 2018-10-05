@@ -12,9 +12,9 @@ namespace Commands {
 
 	void vulkanList(String &);
 	void vulkanHelp(String &);
+	void printExtensions(String &);
 
 	extern void vulkanStart(String &);
-	extern void printExtensions(String &);
 
 	const CommandData VULKAN_DATA_START = {
 		"starts the Vulkan app",
@@ -30,7 +30,7 @@ namespace Commands {
 	};
 	const CommandData VULKAN_DATA_EXT = {
 		"prints supported Vulkan extensions",
-		"Requires a Vulkan instance to be running\nUsage: vulkan ext : print supported extensions"
+		"Usage: vulkan ext : print supported extensions"
 	};
 
 	const Command VULKAN_LIST[] = {

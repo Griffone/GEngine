@@ -1,5 +1,6 @@
 #include "VulkanCommands.h"
 
+#include "App.h"
 #include "CommonCommands.h"
 
 #include <iostream>
@@ -8,8 +9,8 @@ CommandDictionary Commands::vulkanDict;
 
 void Commands::vulkanList(String &) {
 	auto commands = vulkanDict.getCommands();
-	for (auto it = commands.begin(); it != commands.end(); ++it)
-		std::cout << it->command << " - " << it->data.description << ".\n";
+	for (const auto &command : commands)
+		std::cout << command.command << " - " << command.data.description << ".\n";
 }
 
 void Commands::vulkanHelp(String & string) {
@@ -27,4 +28,11 @@ void Commands::vulkanHelp(String & string) {
 void Commands::vulkan(String & string) {
 	if (!Commands::processCommand(string, vulkanDict))
 		std::cout << "Unknown command, please use \"vulkan list\" to list supported sub-commands." << std::endl;
+}
+
+void Commands::printExtensions(String &) {
+	auto extensions = App::getSupportedExtensions();
+	std::cout << "Available Vulkan extensions:" << std::endl;
+	for (const auto &extension : extensions)
+		std::cout << '\t' << extension.extensionName << " v" << std::to_string(extension.specVersion) << std::endl;
 }

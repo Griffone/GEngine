@@ -6,8 +6,8 @@ CommandDictionary Commands::commonDict;
 
 void Commands::commonList(String &) {
 	auto commands = commonDict.getCommands();
-	for (auto it = commands.begin(); it != commands.end(); ++it)
-		std::cout << it->command << " - " << it->data.description << ".\n";
+	for (const auto &command : commands)
+		std::cout << command.command << " - " << command.data.description << ".\n";
 }
 
 void Commands::commonHelp(String & string) {

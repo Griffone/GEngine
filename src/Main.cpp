@@ -32,11 +32,11 @@ int main() {
 
 
 void initialize() {
-	for (int i = 0; i < sizeof(Commands::COMMON_LIST) / sizeof(Command); i++) {
+	for (auto i = 0; i < sizeof(Commands::COMMON_LIST) / sizeof(Command); ++i) {
 		Command cmd = Commands::COMMON_LIST[i];
 		Commands::commonDict.addCommand(cmd.command, cmd.function, cmd.data);
 	}
-	for (int i = 0; i < sizeof(Commands::VULKAN_LIST) / sizeof(Command); i++) {
+	for (auto i = 0; i < sizeof(Commands::VULKAN_LIST) / sizeof(Command); ++i) {
 		Command cmd = Commands::VULKAN_LIST[i];
 		Commands::vulkanDict.addCommand(cmd.command, cmd.function, cmd.data);
 	}
@@ -56,17 +56,6 @@ void Commands::vulkanStart(String &) {
 		thread.detach();
 	} else {
 		std::cout << "A Vulkan instance is already running!" << std::endl;
-	}
-}
-
-void Commands::printExtensions(String &) {
-	if (app == nullptr)
-		std::cout << "Please make sure a Vulkan instance is running, by running \"vulkan start\" command." << std::endl;
-	else {
-		std::cout << "Available extensions:" << std::endl;
-		std::vector<VkExtensionProperties> extensions =  app->getSupportedExtensions();
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-			std::cout << it->extensionName << " v" << std::to_string(it->specVersion) << std::endl;
 	}
 }
 

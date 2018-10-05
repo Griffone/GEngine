@@ -18,8 +18,8 @@ const Command CommandDictionary::getCommand(const std::string & command) const {
 const std::vector<Command> CommandDictionary::getCommands() const {
 	std::vector<Command> vector = std::vector<Command>();
 	vector.reserve(commands.size());
-	for (auto it = commands.cbegin(); it != commands.cend(); ++it)
-		vector.emplace_back(Command{ it->first, it->second.function, it->second.data });
+	for (const auto &command : commands)
+		vector.emplace_back(Command{command.first, command.second.function, command.second.data});
 	return vector;
 }
 
