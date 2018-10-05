@@ -2,26 +2,26 @@
 
 #include <algorithm>
 
-const char * StringUtil::to_cstring(const String & string) {
+const char * StrUtil::toCString(const String & string) {
 	return string.c_str();
 }
 
-String & StringUtil::ltrim(String &string) {
+String & StrUtil::ltrim(String &string) {
 	string.erase(0, string.find_first_not_of(STRING_WHITESPACE));
 	return string;
 }
 
-String & StringUtil::rtrim(String &string) {
+String & StrUtil::rtrim(String &string) {
 	string.erase(string.find_last_not_of(STRING_WHITESPACE) + 1);
 	return string;
 }
 
-String & StringUtil::trim(String &string) {
+String & StrUtil::trim(String &string) {
 	ltrim(string);
 	return rtrim(string);
 }
 
-String StringUtil::firstWord(String &string) {
+String StrUtil::firstWord(String &string) {
 	ltrim(string);
 	auto it = string.find_first_of(STRING_WHITESPACE);
 	String word;
@@ -36,7 +36,7 @@ String StringUtil::firstWord(String &string) {
 	}
 }
 
-String & StringUtil::tolower(String & string) {
+String & StrUtil::lower(String & string) {
 	std::transform(string.begin(), string.end(), string.begin(), ::tolower);
 	return string;
 }

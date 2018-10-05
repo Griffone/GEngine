@@ -1,7 +1,8 @@
 #include "VulkanCommands.h"
 
-#include "App.h"
 #include "CommonCommands.h"
+
+#include "graphics/Graphics.h"
 
 #include <iostream>
 
@@ -14,7 +15,7 @@ void Commands::vulkanList(String &) {
 }
 
 void Commands::vulkanHelp(String & string) {
-	String word = StringUtil::firstWord(string);
+	String word = StrUtil::firstWord(string);
 	if (word.empty())
 		word = "help";
 	try {
@@ -26,13 +27,18 @@ void Commands::vulkanHelp(String & string) {
 }
 
 void Commands::vulkan(String & string) {
-	if (!Commands::processCommand(string, vulkanDict))
-		std::cout << "Unknown command, please use \"vulkan list\" to list supported sub-commands." << std::endl;
+	if (StrUtil::ltrim(string).size() == 0) {
+		std::cout << "\"vulkan\" command is a forward to Vulkan commands." << std::endl;
+		std::cout << "Please use \"vulkan list\" to list supported vulkan commands." << std::endl;
+	} else {
+		if (!Commands::processCommand(string, vulkanDict))
+			std::cout << "Unknown command, please use \"vulkan list\" to list supported sub-commands." << std::endl;
+	}
 }
 
 void Commands::printExtensions(String &) {
-	auto extensions = App::getSupportedExtensions();
+	auto extensions = Graphics::getSupportedExtensions();
 	std::cout << "Available Vulkan extensions:" << std::endl;
 	for (const auto &extension : extensions)
-		std::cout << '\t' << extension.extensionName << " v" << std::to_string(extension.specVersion) << std::endl;
+		std::cout << '\t' << extension.extensionName << " v" << StrUtil::toString(extension.specVersion) << std::endl;
 }

@@ -11,7 +11,7 @@ void Commands::commonList(String &) {
 }
 
 void Commands::commonHelp(String & string) {
-	String word = StringUtil::firstWord(string);
+	String word = StrUtil::firstWord(string);
 	if (word.empty())
 		word = "help";
 	try {
@@ -23,8 +23,8 @@ void Commands::commonHelp(String & string) {
 }
 
 bool Commands::processCommand(String & line, const CommandDictionary & dictionary) {
-	String word = StringUtil::firstWord(line);
-	word = StringUtil::tolower(word);
+	String word = StrUtil::firstWord(line);
+	word = StrUtil::lower(word);
 	try {
 		const Command command = dictionary.getCommand(word);
 		command.function(line);

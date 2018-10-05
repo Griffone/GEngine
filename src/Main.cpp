@@ -2,19 +2,24 @@
 	Initialization vector for the executable.
 */
 
-#include "App.h"
 #include "CommonCommands.h"
 #include "VulkanCommands.h"
+#include "Window.h"
+
+#include "graphics/Graphics.h"
 
 #include <thread>
 #include <iostream>
 
 
+const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
+
 bool alive = true;
-App *app = nullptr;
+Window *window = nullptr;
+Graphics *graphics = nullptr;
 
 void initialize();
-void runVulkan();
+void cleanup();
 
 // Program starts here.
 int main() {
@@ -27,6 +32,7 @@ int main() {
 			std::cout << "Unknown command, please use \"list\" to list supported commands.\n";
 	}
 
+	cleanup();
 	return EXIT_SUCCESS;
 }
 
@@ -44,28 +50,36 @@ void initialize() {
 	std::cout << "Use \"list\" to list supported commands." << std::endl;
 }
 
+void cleanup() {
+	if (window)
+		delete window;
+
+	if (graphics)
+		delete graphics;
+}
+
 void Commands::exit(String &) {
 	alive = false;
 }
 
 void Commands::vulkanStart(String &) {
+	if (graphics == nullptr)
+		graphics = new Graphics();
+
 	// Atomic read operation, so no special adressing
-	if (app == nullptr) {
-		std::thread thread(runVulkan);
-		std::cout << "Running Vulkan." << std::endl;
-		thread.detach();
-	} else {
-		std::cout << "A Vulkan instance is already running!" << std::endl;
-	}
+	if (window == nullptr) {
+		std::cout << "The command is currently under development..." << std::endl;
+	} else
+		std::cout << "The Vulkan app is already running!" << std::endl;
 }
 
-void runVulkan() {
-	app = new App();
-	try {
-		app->loop();
-		std::cout << "vulkan app stopped" << std::endl;
-	} catch (const std::exception &e) {
-		std::cerr << e.what() << std::endl;
+void Commands::vulkanDevices(String & string) {
+	if (graphics == nullptr)
+		graphics = new Graphics();
+
+	for (const auto & device : graphics->getPhysicalDevices()) {
+		auto deviceProperties = Graphics::getDeviceProperties(device);
+		printf("%-*s : %i", PHYSICAL_DEVICE_NAME_LENGTH, deviceProperties.deviceName, Graphics::rateDeviceSuitability(device));
+		std::cout << std::endl;
 	}
-	delete app;
 }

@@ -23,9 +23,6 @@
     <ClCompile Include="src\String.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="src\App.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="src\console\CommandDictionary.cpp">
       <Filter>Console</Filter>
     </ClCompile>
@@ -34,6 +31,12 @@
     </ClCompile>
     <ClCompile Include="src\VulkanCommands.cpp">
       <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Graphics.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,9 +49,6 @@
     <ClInclude Include="src\console\Command.h">
       <Filter>Console</Filter>
     </ClInclude>
-    <ClInclude Include="src\App.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="src\console\CommandDictionary.h">
       <Filter>Console</Filter>
     </ClInclude>
@@ -57,6 +57,12 @@
     </ClInclude>
     <ClInclude Include="src\CommonCommands.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Graphics.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
