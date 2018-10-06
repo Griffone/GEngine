@@ -4,11 +4,13 @@
 	Code relevant to handling an OS Window.
 */
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <vector>
 
 class Window {
+	friend class Graphics;
 public:
 	Window(const char * strWindowTitle, int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
 	~Window();

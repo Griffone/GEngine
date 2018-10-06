@@ -79,7 +79,7 @@ void Commands::vulkanDevices(String & string) {
 
 	for (const auto & device : graphics->getPhysicalDevices()) {
 		auto deviceProperties = Graphics::getDeviceProperties(device);
-		printf("%-*s : %i", PHYSICAL_DEVICE_NAME_LENGTH, deviceProperties.deviceName, Graphics::rateDeviceSuitability(device));
+		printf("%-*s : %i", PHYSICAL_DEVICE_NAME_LENGTH, deviceProperties.deviceName, graphics->rateDeviceSuitability(device));
 		std::cout << std::endl;
 	}
 }
