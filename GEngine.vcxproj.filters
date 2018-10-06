@@ -13,7 +13,7 @@
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
     <Filter Include="Graphics">
-      <UniqueIdentifier>{f09ee4f0-608b-4dfe-bc14-c3e145649a13}</UniqueIdentifier>
+      <UniqueIdentifier>{c2d4233c-e29e-4a3d-8f82-d82f87763fac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -29,17 +29,14 @@
     <ClCompile Include="src\console\CommandDictionary.cpp">
       <Filter>Console</Filter>
     </ClCompile>
-    <ClCompile Include="src\CommonCommands.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanCommands.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="src\Window.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\Graphics.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanCommands.cpp">
+      <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,25 +49,20 @@
     <ClInclude Include="src\console\Command.h">
       <Filter>Console</Filter>
     </ClInclude>
-    <ClInclude Include="src\console\CommandDictionary.h">
-      <Filter>Console</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanCommands.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="src\CommonCommands.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\CommandDictionary.h">
+      <Filter>Console</Filter>
     </ClInclude>
     <ClInclude Include="src\Window.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\Graphics.h">
       <Filter>Graphics</Filter>
-    <ClInclude Include="src\CommonCommands.h">
-      <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="src\console\CommandDictionary.h">
-      <Filter>Console</Filter>
+    <ClInclude Include="src\VulkanCommands.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

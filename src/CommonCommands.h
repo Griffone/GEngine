@@ -10,10 +10,7 @@ namespace Commands {
 
 	extern CommandDictionary commonDict;
 	extern void exit(String &);
-<<<<<<< HEAD
 	extern void vulkan(String &);
-=======
->>>>>>> master
 
 	void commonList(String &);
 	void commonHelp(String &);
@@ -32,23 +29,16 @@ namespace Commands {
 		"stops the program",
 		"Usage: exit : stop the program"
 	};
-<<<<<<< HEAD
 	const CommandData COMMON_DATA_VULKAN = {
 		"forward to vulkan commands",
 		"Usage: vulkan <sub-command>: execute sub-command"
 	};
-=======
->>>>>>> master
 
 	const Command COMMON_LIST[] = {
 		{ "exit", exit, COMMON_DATA_EXIT },
 		{ "list", commonList, COMMON_DATA_LIST },
-<<<<<<< HEAD
 		{ "help", commonHelp, COMMON_DATA_HELP},
 		{ "vulkan", vulkan, COMMON_DATA_VULKAN }
-=======
-		{ "help", commonHelp, COMMON_DATA_HELP}
->>>>>>> master
 	};
 
 }
