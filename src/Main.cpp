@@ -2,8 +2,9 @@
 	Initialization vector for the executable.
 */
 
-#include "Commands.h"
-#include "console/Console.h"
+#include "CommonCommands.h"
+
+#include <iostream>
 
 bool alive = true;
 
@@ -16,19 +17,20 @@ int main() {
 	String line;
 	while (alive) {
 		std::getline(std::cin, line);
-		Console::processLine(line);
+		if (!Commands::processCommand(line, Commands::commonDict)) {
+			std::cout << "Unknown command! Please use \"list\" to list supported commands." << std::endl;
+		}
 	}
 
 	return 0;
 }
 
 void initialize() {
-	for (int i = 0; i < sizeof(Commands::LIST) / sizeof(Console::Command); i++) {
-		Console::Command cmd = Commands::LIST[i];
-		Console::Dictionary::addCommand(cmd.command, cmd.function, cmd.data);
-	}
-	Console::initialize();
-	std::cout << "Welcome to GEngine by Griffone.\nUse \"list\" to list supported commands.\n";
+	for (const auto &command : Commands::COMMON_LIST)
+		Commands::commonDict.addCommand(command.command, command.function, command.data);
+
+	std::cout << "Welcome to GEngine by Griffone." << std::endl;
+	std::cout << "Use \"list\" to list supported commands." << std::endl;
 }
 
 void Commands::exit(String &) {

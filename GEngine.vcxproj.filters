@@ -14,16 +14,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\console\Console.cpp">
-      <Filter>Console</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="src\String.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="src\console\Dictionary.cpp">
+    <ClCompile Include="src\CommonCommands.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\console\CommandDictionary.cpp">
       <Filter>Console</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,20 +31,17 @@
     <ClInclude Include="src\Global.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="src\console\Console.h">
-      <Filter>Console</Filter>
-    </ClInclude>
-    <ClInclude Include="src\console\Dictionary.h">
-      <Filter>Console</Filter>
-    </ClInclude>
     <ClInclude Include="src\String.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="src\console\Command.h">
       <Filter>Console</Filter>
     </ClInclude>
-    <ClInclude Include="src\Commands.h">
+    <ClInclude Include="src\CommonCommands.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\console\CommandDictionary.h">
+      <Filter>Console</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

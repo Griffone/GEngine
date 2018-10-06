@@ -13,9 +13,13 @@
 
 using String = std::string;
 
-namespace StringUtil {
+namespace StrUtil {
 
-	const char *to_cstring(const String &);
+	template<typename Type> String toString(const Type & t) {
+		return std::to_string(t);
+	}
+
+	const char *toCString(const String &);
 
 	/// Remove preceding or trailing whitespaces from a string
 	/// Note: modifies the provided string
@@ -27,5 +31,5 @@ namespace StringUtil {
 	String firstWord(String &);
 
 	/// Change string to lower characters, will modify the provided string
-	String &tolower(String &);
+	String &lower(String &);
 }
