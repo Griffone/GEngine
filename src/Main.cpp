@@ -28,8 +28,9 @@ int main() {
 	String line;
 	while (alive) {
 		std::getline(std::cin, line);
-		if (!Commands::processCommand(line, Commands::commonDict))
-			std::cout << "Unknown command, please use \"list\" to list supported commands.\n";
+		if (!Commands::processCommand(line, Commands::commonDict)) {
+			std::cout << "Unknown command! Please use \"list\" to list supported commands." << std::endl;
+		}
 	}
 
 	cleanup();
@@ -38,6 +39,7 @@ int main() {
 
 
 void initialize() {
+	Window::initialize();
 	for (auto i = 0; i < sizeof(Commands::COMMON_LIST) / sizeof(Command); ++i) {
 		Command cmd = Commands::COMMON_LIST[i];
 		Commands::commonDict.addCommand(cmd.command, cmd.function, cmd.data);
@@ -56,6 +58,8 @@ void cleanup() {
 
 	if (graphics)
 		delete graphics;
+
+	Window::terminate();
 }
 
 void Commands::exit(String &) {
