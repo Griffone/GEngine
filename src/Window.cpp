@@ -5,7 +5,6 @@
 bool Window::initialized = false;
 
 Window::Window(const char * strWindowTitle, int width, int height) {
-	glfwInit();
 	// We don't need any OpenGL context
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -14,9 +13,23 @@ Window::Window(const char * strWindowTitle, int width, int height) {
 }
 
 Window::~Window() {
-	glfwDestroyWindow(window);
+	for (const auto &function : onDestroy)
+		function(*this);
 
-	glfwTerminate();
+	glfwDestroyWindow(window);
+}
+
+void Window::pollEvents() {
+	glfwPollEvents();
+}
+
+bool Window::shouldClose() {
+	return glfwWindowShouldClose(window);
+}
+
+void Window::addOnDestroyListener(WindowCallback function) {
+	if (function != nullptr)
+		onDestroy.emplace_back(function);
 }
 
 std::vector<const char*> Window::getRequiredExtensions() {
@@ -37,4 +50,9 @@ void Window::initialize() {
 void Window::terminate() {
 	if (initialized)
 		glfwTerminate();
+}
+
+void Window::getWindowPtr(GLFWwindow **ppWindow) {
+	if (ppWindow != nullptr)
+		*ppWindow = window;
 }

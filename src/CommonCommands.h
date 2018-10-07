@@ -30,8 +30,8 @@ namespace Commands {
 		"Usage: exit : stop the program"
 	};
 	const CommandData COMMON_DATA_VULKAN = {
-		"forward to vulkan commands",
-		"Usage: vulkan <sub-command>: execute sub-command"
+		"start the Vulkan application",
+		"Usage: vulkan : start Vulkan demo application"
 	};
 
 	const Command COMMON_LIST[] = {

@@ -3,7 +3,6 @@
 */
 
 #include "CommonCommands.h"
-#include "VulkanCommands.h"
 #include "Window.h"
 
 #include "graphics/Graphics.h"
@@ -16,7 +15,6 @@ const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 
 bool alive = true;
 Window *window = nullptr;
-Graphics *graphics = nullptr;
 
 void initialize();
 void cleanup();
@@ -39,14 +37,9 @@ int main() {
 
 
 void initialize() {
-	Window::initialize();
 	for (auto i = 0; i < sizeof(Commands::COMMON_LIST) / sizeof(Command); ++i) {
 		Command cmd = Commands::COMMON_LIST[i];
 		Commands::commonDict.addCommand(cmd.command, cmd.function, cmd.data);
-	}
-	for (auto i = 0; i < sizeof(Commands::VULKAN_LIST) / sizeof(Command); ++i) {
-		Command cmd = Commands::VULKAN_LIST[i];
-		Commands::vulkanDict.addCommand(cmd.command, cmd.function, cmd.data);
 	}
 	std::cout << "Welcome to GEngine by Griffone." << std::endl;
 	std::cout << "Use \"list\" to list supported commands." << std::endl;
@@ -56,9 +49,7 @@ void cleanup() {
 	if (window)
 		delete window;
 
-	if (graphics)
-		delete graphics;
-
+	Graphics::terminate();
 	Window::terminate();
 }
 
@@ -66,24 +57,28 @@ void Commands::exit(String &) {
 	alive = false;
 }
 
-void Commands::vulkanStart(String &) {
-	if (graphics == nullptr)
-		graphics = new Graphics();
+void windowLife() {
+	window = new Window("Vulkan Demo");
+	Graphics::setupForWindow(*window);
 
-	// Atomic read operation, so no special adressing
-	if (window == nullptr) {
-		std::cout << "The command is currently under development..." << std::endl;
-	} else
-		std::cout << "The Vulkan app is already running!" << std::endl;
+	while (!window->shouldClose()) {
+		window->pollEvents();
+
+		// Draw something
+	}
+
+	delete window;
+	window = nullptr;
 }
 
-void Commands::vulkanDevices(String & string) {
-	if (graphics == nullptr)
-		graphics = new Graphics();
-
-	for (const auto & device : graphics->getPhysicalDevices()) {
-		auto deviceProperties = Graphics::getDeviceProperties(device);
-		printf("%-*s : %i", PHYSICAL_DEVICE_NAME_LENGTH, deviceProperties.deviceName, graphics->rateDeviceSuitability(device));
-		std::cout << std::endl;
+void Commands::vulkan(String &string) {
+	if (window) {
+		std::cout << "A Vulkan app is already running." << std::endl;
+		return;
 	}
+
+	Window::initialize();
+	Graphics::initialize();
+	std::thread thread(windowLife);
+	thread.detach();
 }

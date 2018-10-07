@@ -10,11 +10,19 @@
 #include <vector>
 
 class Window {
-	friend class Graphics;
 public:
+	typedef void(*WindowCallback)(const Window &);
+
 	Window(const char * strWindowTitle, int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
 	~Window();
 
+	/// Poll and process basic window events
+	void pollEvents();
+	/// Check if the window should close
+	bool shouldClose();
+
+	/// Add a function that will be called just before window deletion
+	void addOnDestroyListener(WindowCallback);
 	static std::vector<const char*> getRequiredExtensions();
 
 	static const int DEFAULT_WIDTH = 800;
@@ -23,7 +31,11 @@ public:
 	/// Initialize the library
 	static void initialize();
 	static void terminate();
+
+	// An unsafe hack around my decoupling of Graphics and OS APIs
+	void getWindowPtr(GLFWwindow **);
 private:
 	static bool initialized;
 	GLFWwindow *window;
+	std::vector<WindowCallback> onDestroy;
 };
