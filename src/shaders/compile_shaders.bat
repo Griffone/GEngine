@@ -12,12 +12,9 @@ for %%f in (*.vert, *.frag) do (
     echo %%~nxf ^=^> !name!
 )
 echo Shaders compiled
-goto END
+exit 0
 
 :NOENVVAR
 echo The "VULKAN_SDK" environment variable is not set.
 echo Please set the environment variable to point to your vulkan sdk folder!
-goto END
-
-:END
-pause
+exit 3
