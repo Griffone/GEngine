@@ -8,6 +8,8 @@ Window::Window(const char * strWindowTitle, int width, int height) {
 	// We don't need any OpenGL context
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+	visible = false;
 
 	window = glfwCreateWindow(width,height, strWindowTitle, nullptr, nullptr);
 }
@@ -25,6 +27,20 @@ void Window::pollEvents() {
 
 bool Window::shouldClose() {
 	return glfwWindowShouldClose(window);
+}
+
+bool Window::isVisible() const {
+	return visible;
+}
+
+void Window::setVisible(bool _visible) {
+	if (visible == _visible) return;
+
+	visible = _visible;
+	if (visible)
+		glfwShowWindow(window);
+	else
+		glfwHideWindow(window);
 }
 
 void Window::addOnDestroyListener(WindowCallback function) {

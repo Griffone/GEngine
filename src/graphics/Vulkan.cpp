@@ -24,6 +24,12 @@ namespace Vulkan {
 		}
 	};
 
+	struct SwapChainSupportDetails {
+		VkSurfaceCapabilitiesKHR capabilities;
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR> presentModes;
+	};
+
 	// ====================================================================
 	// ===					Private library constants					===
 	// ====================================================================
@@ -91,14 +97,21 @@ namespace Vulkan {
 	std::vector<VkPhysicalDevice> getPhysicalDevices();
 	VkPhysicalDeviceFeatures getDeviceFeatures(const VkPhysicalDevice &);
 	VkPhysicalDeviceProperties getDeviceProperties(const VkPhysicalDevice &);
+	QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice &);
+	SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice &);
+
+	// A filter for physical devices
+	bool isDeviceSuitable(const VkPhysicalDevice &);
 
 	// Make sure the Vulkan instance supports validation layers
 	bool checkValidationLayerSupport();
+	// Make sure given Physical Device has required extensions
+	bool checkDeviceExtensionSupport(const VkPhysicalDevice &);
+
 	// Get a list of all required extensions
 	// Takes into account whether validation layers are enabled or not
 	std::vector<const char *> getRequiredExtensions();
 	unsigned int rateDeviceSuitability(const VkPhysicalDevice &);
-	QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice &);
 
 	VkResult createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 		const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback);
@@ -163,6 +176,10 @@ namespace Vulkan {
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 
 		lastWindow = nullptr;
+	}
+
+	void createWindowSurface(GLFWwindow *window) {
+
 	}
 
 	inline void createVulkanInstance() {
@@ -276,6 +293,9 @@ namespace Vulkan {
 		} else
 			createInfo.enabledLayerCount = 0;
 
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(DEVICE_EXTENSIONS.size());
+		createInfo.ppEnabledExtensionNames = DEVICE_EXTENSIONS.data();
+
 		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create logical device!");
 
@@ -283,18 +303,27 @@ namespace Vulkan {
 		vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 	}
 
-	inline unsigned int rateDeviceSuitability(const VkPhysicalDevice &device) {
-		// Make sure the device supports necessary queues
-		QueueFamilyIndices indicies = findQueueFamilies(device);
-		if (!indicies.isComplete())
-			return 0;
+	bool isDeviceSuitable(const VkPhysicalDevice &device) {
+		QueueFamilyIndices indices = findQueueFamilies(device);
+		if (!indices.isComplete()) return false;
 
+		if (!checkDeviceExtensionSupport(device)) return false;
+
+		bool swapChainAdequate = false;
+		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+
+		return swapChainAdequate;
+	}
+
+	inline unsigned int rateDeviceSuitability(const VkPhysicalDevice &device) {
+		if (!isDeviceSuitable(device))
+			return 0;
 
 		VkPhysicalDeviceFeatures deviceFeatures = getDeviceFeatures(device);
 		// Application can't function without geometry shaders
 		if (!deviceFeatures.geometryShader)
 			return 0;
-
 
 		int score = 0;
 		VkPhysicalDeviceProperties deviceProperties = getDeviceProperties(device);
@@ -334,7 +363,6 @@ namespace Vulkan {
 		return deviceProperties;
 	}
 
-
 	inline QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice &device) {
 		QueueFamilyIndices indices;
 
@@ -360,6 +388,28 @@ namespace Vulkan {
 		return indices;
 	}
 
+	inline SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice &device) {
+		SwapChainSupportDetails details;
+
+		uint32_t formatCount;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+		if (formatCount != 0) {
+			details.formats.resize(formatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		}
+
+		uint32_t presentModeCount;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+		if (presentModeCount != 0) {
+			details.presentModes.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+		}
+
+		return details;
+	}
+
 	inline bool checkValidationLayerSupport() {
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -373,6 +423,22 @@ namespace Vulkan {
 			requiredLayers.erase(layer.layerName);
 
 		return requiredLayers.empty();
+	}
+
+	inline bool checkDeviceExtensionSupport(const VkPhysicalDevice &device) {
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+		std::set<std::string> requiredExtensions(DEVICE_EXTENSIONS.begin(), DEVICE_EXTENSIONS.end());
+
+		for (const auto& extension : availableExtensions) {
+			requiredExtensions.erase(extension.extensionName);
+		}
+
+		return requiredExtensions.empty();
 	}
 
 	inline std::vector<const char *> getRequiredExtensions() {

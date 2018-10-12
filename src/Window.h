@@ -21,6 +21,12 @@ public:
 	/// Check if the window should close
 	bool shouldClose();
 
+	/// Is the window currently visible
+	bool isVisible() const;
+
+	/// Set the visibility of the window to <param>
+	void setVisible(bool);
+
 	/// Add a function that will be called just before window deletion
 	void addOnDestroyListener(WindowCallback);
 	static std::vector<const char*> getRequiredExtensions();
@@ -36,6 +42,7 @@ public:
 	void getWindowPtr(GLFWwindow **);
 private:
 	static bool initialized;
+	bool visible = false;
 	GLFWwindow *window;
 	std::vector<WindowCallback> onDestroy;
 };
