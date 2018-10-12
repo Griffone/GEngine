@@ -34,7 +34,9 @@ int main() {
 	while (!window->shouldClose()) {
 		window->pollEvents();
 
-		// TODO: Vulkan draws here
+		if (vulkanInitialized) {
+			// TODO: Draw stuff
+		}
 	}
 
 	alive = false;
@@ -84,6 +86,8 @@ void Commands::vulkan(String &string) {
 	if (!vulkanInitialized) {
 		std::cout << "Initializing vulkan." << std::endl;
 		Graphics::initialize();
+		Graphics::setupForWindow(*window);
+		vulkanInitialized = true;
 	}
 
 	if (!window->isVisible())

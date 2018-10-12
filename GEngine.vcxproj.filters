@@ -15,6 +15,9 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{c2d4233c-e29e-4a3d-8f82-d82f87763fac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a2e8a7cd-c8ff-4381-b557-94a30e5ac852}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
