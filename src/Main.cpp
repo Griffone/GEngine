@@ -34,7 +34,7 @@ int main() {
 	while (!window->shouldClose()) {
 		window->pollEvents();
 
-		if (vulkanInitialized) {
+		if (vulkanInitialized && window->isVisible()) {
 			// TODO: Draw stuff
 			Graphics::draw();
 		}

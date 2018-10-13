@@ -13,6 +13,7 @@ Window::Window(const char * strWindowTitle, int width, int height) {
 	window = glfwCreateWindow(width,height, strWindowTitle, nullptr, nullptr);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+	glfwSetWindowIconifyCallback(window, windowMinimizeRestoreCallback);
 }
 
 Window::~Window() {
@@ -31,7 +32,11 @@ bool Window::shouldClose() {
 }
 
 bool Window::isVisible() const {
-	return visible;
+	return visible && !minimized;
+}
+
+bool Window::isMinimized() const {
+	return minimized;
 }
 
 void Window::setVisible(bool _visible) {
@@ -44,8 +49,13 @@ void Window::setVisible(bool _visible) {
 		glfwHideWindow(window);
 }
 
-void Window::setOnResizeListener(WindowCallback _onResize) {
-	onResize = _onResize;
+void Window::getFramebufferSize(int * outWidth, int * outHeight) {
+	glfwGetFramebufferSize(window, outWidth, outHeight);
+}
+
+void Window::addOnResizeListener(WindowCallback function) {
+	if (function != nullptr)
+		onResizes.emplace_back(function);
 }
 
 void Window::addOnDestroyListener(WindowCallback function) {
@@ -73,13 +83,13 @@ void Window::terminate() {
 		glfwTerminate();
 }
 
-void Window::getWindowPtr(GLFWwindow **ppWindow) {
-	if (ppWindow != nullptr)
-		*ppWindow = window;
-}
-
 void Window::framebufferResizeCallback(GLFWwindow * window, int width, int height) {
 	auto wnd = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (wnd->onResize != nullptr)
-		wnd->onResize(*wnd);
+	for (auto function : wnd->onResizes)
+		function(*wnd);
+}
+
+void Window::windowMinimizeRestoreCallback(GLFWwindow * window, int iconified) {
+	auto wnd = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+	wnd->minimized = iconified == GLFW_TRUE;
 }

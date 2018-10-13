@@ -4,14 +4,31 @@
 	Code relevant to handling an OS Window.
 */
 
+#include "Global.h"
+
+#if USE_VULKAN
 #define GLFW_INCLUDE_VULKAN
+#endif // USE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 #include <vector>
 
+#if USE_VULKAN
+class Window;
+
+namespace Vulkan {
+	extern void createSurface(Window &);
+}
+
+#endif // USE_VULKAN
+
 class Window {
+#if USE_VULKAN
+	friend void Vulkan::createSurface(Window &);
+#endif // USE_VULKAN
 public:
-	typedef void(*WindowCallback)(const Window &);
+	typedef void(*WindowCallback)(Window &);
 
 	Window(const char * strWindowTitle, int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
 	~Window();
@@ -23,11 +40,14 @@ public:
 
 	/// Is the window currently visible
 	bool isVisible() const;
+	bool isMinimized() const;
 
 	/// Set the visibility of the window to <param>
 	void setVisible(bool);
 
-	void setOnResizeListener(WindowCallback);
+	void getFramebufferSize(int *outWidth, int *outHeight);
+
+	void addOnResizeListener(WindowCallback);
 
 	/// Add a function that will be called just before window deletion
 	void addOnDestroyListener(WindowCallback);
@@ -39,15 +59,12 @@ public:
 	/// Initialize the library
 	static void initialize();
 	static void terminate();
-
-	// An unsafe hack around my decoupling of Graphics and OS APIs
-	void getWindowPtr(GLFWwindow **);
 private:
 	static bool initialized;
-	bool visible = false;
+	bool visible = false, minimized = false;
 	GLFWwindow *window;
-	std::vector<WindowCallback> onDestroys;
-	WindowCallback onResize;
+	std::vector<WindowCallback> onDestroys, onResizes;
 
 	static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+	static void windowMinimizeRestoreCallback(GLFWwindow *window, int iconified);
 };
