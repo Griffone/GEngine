@@ -27,6 +27,8 @@ public:
 	/// Set the visibility of the window to <param>
 	void setVisible(bool);
 
+	void setOnResizeListener(WindowCallback);
+
 	/// Add a function that will be called just before window deletion
 	void addOnDestroyListener(WindowCallback);
 	static std::vector<const char*> getRequiredExtensions();
@@ -44,5 +46,8 @@ private:
 	static bool initialized;
 	bool visible = false;
 	GLFWwindow *window;
-	std::vector<WindowCallback> onDestroy;
+	std::vector<WindowCallback> onDestroys;
+	WindowCallback onResize;
+
+	static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 };

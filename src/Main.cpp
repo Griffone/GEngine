@@ -36,6 +36,7 @@ int main() {
 
 		if (vulkanInitialized) {
 			// TODO: Draw stuff
+			Graphics::draw();
 		}
 	}
 

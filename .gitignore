@@ -5,6 +5,7 @@
 
 # Compiled shaders
 *.spv
+shaders/
 
 # User-specific files
 *.rsuser

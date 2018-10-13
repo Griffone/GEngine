@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="src\CommonCommands.cpp" />
     <ClCompile Include="src\console\CommandDictionary.cpp" />
+    <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\graphics\Vulkan.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\String.cpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="src\CommonCommands.h" />
     <ClInclude Include="src\console\Command.h" />
     <ClInclude Include="src\console\CommandDictionary.h" />
+    <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Global.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
     <ClInclude Include="src\graphics\Vulkan.h" />
@@ -116,18 +118,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  
   <!-- Custom Build stuff -->
-  <ItemGroup>  
-      <ShaderSoruceFiles Include="src\shaders\*.spv"/>  
-    </ItemGroup>
-
   <Target Name="AfterBuild">
-    <Exec Command="src\shaders\compile_shaders.bat"/>
-
-    <Move  
-      SourceFiles="@(ShaderSoruceFiles)"  
-      DestinationFolder="$(TargetDir)\shaders"  
-    />  
-  </Target>  
+    <Exec Command="compile_shaders.bat"/>
+    <ItemGroup>
+      <ShaderBinaries Include="$(ProjectDir)src\shaders\*.spv" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ShaderBinaries)" DestinationFolder="$(ProjectDir)shaders"/>
+    <Move SourceFiles="@(ShaderBinaries)" DestinationFolder="$(TargetDir)shaders" />
+  </Target>
 </Project>

@@ -16,6 +16,7 @@ namespace Vulkan {
 	extern const char * const	ENGINE_NAME;
 	extern const uint32_t		APP_VERSION;
 	extern const uint32_t		ENGINE_VERSION;
+	const int					MAX_FRAMES_IN_FLIGHT = 2;
 
 	/// Initialize the Library.
 	/// Must be done before any other calls to the library
@@ -24,6 +25,8 @@ namespace Vulkan {
 	/// Clanup Vulkan resources
 	/// Should be the last call to the library
 	void terminate();
+
+	void draw();
 
 	/// Couple to window's surface
 	/// Creates the necessary pipeline for renderint images to window

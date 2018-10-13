@@ -38,6 +38,9 @@
     <ClCompile Include="src\graphics\Vulkan.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\File.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Global.h">
@@ -63,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="src\graphics\Graphics.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

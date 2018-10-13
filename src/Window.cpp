@@ -7,15 +7,16 @@ bool Window::initialized = false;
 Window::Window(const char * strWindowTitle, int width, int height) {
 	// We don't need any OpenGL context
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	visible = false;
 
 	window = glfwCreateWindow(width,height, strWindowTitle, nullptr, nullptr);
+	glfwSetWindowUserPointer(window, this);
+	glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
 Window::~Window() {
-	for (const auto &function : onDestroy)
+	for (const auto &function : onDestroys)
 		function(*this);
 
 	glfwDestroyWindow(window);
@@ -43,9 +44,13 @@ void Window::setVisible(bool _visible) {
 		glfwHideWindow(window);
 }
 
+void Window::setOnResizeListener(WindowCallback _onResize) {
+	onResize = _onResize;
+}
+
 void Window::addOnDestroyListener(WindowCallback function) {
 	if (function != nullptr)
-		onDestroy.emplace_back(function);
+		onDestroys.emplace_back(function);
 }
 
 std::vector<const char*> Window::getRequiredExtensions() {
@@ -71,4 +76,10 @@ void Window::terminate() {
 void Window::getWindowPtr(GLFWwindow **ppWindow) {
 	if (ppWindow != nullptr)
 		*ppWindow = window;
+}
+
+void Window::framebufferResizeCallback(GLFWwindow * window, int width, int height) {
+	auto wnd = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+	if (wnd->onResize != nullptr)
+		wnd->onResize(*wnd);
 }

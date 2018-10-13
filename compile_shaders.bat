@@ -3,12 +3,12 @@ if "%VULKAN_SDK%" == "" goto NOENVVAR
 
 rem Compile all shaders
 echo Compiling shaders
+cd src\shaders
 setlocal EnableDelayedExpansion
 for %%f in (*.vert, *.frag) do (
     set x=%%~xf
     set name=%%~nf_!x:~1!.spv
     %VULKAN_SDK%\Bin\glslangValidator.exe -V %%f -o !name! -s
-    set line="%%~nxf => !name!"
     echo %%~nxf ^=^> !name!
 )
 echo Shaders compiled
