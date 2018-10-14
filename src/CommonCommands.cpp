@@ -17,7 +17,7 @@ void Commands::commonHelp(String & string) {
 	try {
 		const Command command = commonDict.getCommand(word);
 		std::cout << command.command << " - " << command.data.description << ".\n" << command.data.help << '\n';
-	} catch (std::exception &e) {
+	} catch (CommandNotFoundException &e) {
 		std::cout << "Unknown command \"" << word << "\", please use \"list\" to list supported commands.\n";
 	}
 }
@@ -28,7 +28,7 @@ bool Commands::processCommand(String & line, const CommandDictionary & dictionar
 	try {
 		const Command command = dictionary.getCommand(word);
 		command.function(line);
-	} catch (std::exception &e) {
+	} catch (CommandNotFoundException &e) {
 		return false;
 	}
 	return true;

@@ -46,31 +46,11 @@ private:
 	struct Vertex {
 		glm::vec2 pos;
 		glm::vec3 color;
+		glm::vec2 texCoord;
 
-		static VkVertexInputBindingDescription getBindingDescription() {
-			VkVertexInputBindingDescription bindingDescription = {};
-			bindingDescription.binding = 0;
-			bindingDescription.stride = sizeof(Vertex);
-			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		static VkVertexInputBindingDescription getBindingDescription();
 
-			return bindingDescription;
-		}
-
-		static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-			attributeDescriptions[0].binding = 0;
-			attributeDescriptions[0].location = 0;
-			attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-			attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-			attributeDescriptions[1].binding = 0;
-			attributeDescriptions[1].location = 1;
-			attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-			attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-			return attributeDescriptions;
-		}
+		static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
 	};
 
 	struct UniformBufferObject {
@@ -146,6 +126,11 @@ private:
 	VkCommandPool					commandPool;
 	std::vector<VkCommandBuffer>	commandBuffers;
 
+	VkImage							textureImage;
+	VkImageView						textureImageView;
+	VkSampler						textureSampler;
+	VkDeviceMemory					textureImageMemory;
+
 	VkBuffer						vertexBuffer, indexBuffer;
 	VkDeviceMemory					vertexBufferMemory, indexBufferMemory;
 	std::vector<VkBuffer>			uniformBuffers;
@@ -191,6 +176,9 @@ private:
 	void createDescriptorSetLayout();
 
 	void createCommandPool();
+	void createTextureImage();
+	void createTextureImageView();
+	void createTextureSampler();
 	void createVertexBuffer();
 	void createIndexBuffer();
 	void createUniformBuffers();
@@ -205,8 +193,11 @@ private:
 
 	void recreateSwapchain();
 
+
 	void updateUniformBuffer(uint32_t currentImage, float time);
 
+
+	void transitionImageLayout(const VkImage &image, const VkFormat &format, const VkImageLayout &oldLayout, const VkImageLayout &newLayout);
 
 	static std::vector<VkPhysicalDevice> getPhysicalDevices();
 	static VkPhysicalDeviceFeatures getDeviceFeatures(const VkPhysicalDevice &);
@@ -223,11 +214,16 @@ private:
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 	uint32_t findMemoryType(uint32_t typeFilter, const VkMemoryPropertyFlags &properties);
 
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(const VkCommandBuffer &);
+
 	VkShaderModule createShaderModule(const std::vector<char> &);
-	void createBuffer(const VkDeviceSize &size, const VkBufferUsageFlags &usage,
-		const VkMemoryPropertyFlags &properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+	VkImageView createImageView(const VkImage &image, const VkFormat &format);
+	void createBuffer(const VkDeviceSize &size, const VkBufferUsageFlags &usage, const VkMemoryPropertyFlags &properties, VkBuffer &outBuffer, VkDeviceMemory &outBufferMemory);
+	void createImage(uint32_t width, uint32_t height, const VkFormat &format, const VkImageTiling &tiling, const VkImageUsageFlags &usage, const VkMemoryPropertyFlags &properties, VkImage &outImage, VkDeviceMemory &outImageMemory);
 
 	void copyBuffer(const VkBuffer &srcBuffer, const VkBuffer &dstBuffer, const VkDeviceSize &size);
+	void copyBufferToImage(const VkBuffer &buffer, const VkImage &image, uint32_t width, uint32_t height);
 
 	unsigned int rateDeviceSuitability(const VkPhysicalDevice &);
 	bool isDeviceSuitable(const VkPhysicalDevice &);
