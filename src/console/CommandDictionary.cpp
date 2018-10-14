@@ -11,8 +11,12 @@ void CommandDictionary::addCommand(const String & command, const CommandFunction
 }
 
 const Command CommandDictionary::getCommand(const std::string & command) const {
-	CommandPayload cp = commands.at(command);
-	return Command{ command, cp.function, cp.data };
+	try {
+		CommandPayload cp = commands.at(command);
+		return Command{ command, cp.function, cp.data };
+	} catch (const std::exception &e) {
+		throw CommandNotFoundException();
+	}
 }
 
 const std::vector<Command> CommandDictionary::getCommands() const {

@@ -3,7 +3,7 @@ if "%VULKAN_SDK%" == "" goto NOENVVAR
 
 rem Compile all shaders
 echo Compiling shaders
-cd src\shaders
+cd shaders
 setlocal EnableDelayedExpansion
 for %%f in (*.vert, *.frag) do (
     set x=%%~xf

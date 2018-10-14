@@ -8,12 +8,19 @@
 
 #include "Command.h"
 
+#include <exception>
 #include <map>
 #include <vector>
 
 struct CommandPayload {
 	const CommandFunction	function;
 	const CommandData		&data;
+};
+
+struct CommandNotFoundException : public std::exception {
+	const char * what() const throw () {
+		return "Command was not found";
+	}
 };
 
 class CommandDictionary {
@@ -25,7 +32,7 @@ public:
 	void addCommand(const String &command, const CommandFunction function, const CommandData &data);
 
 	/// Attempt to get a command from internal dictionary
-	/// Throws an exception if a command is not found
+	/// Throws a CommandNotFoundExcption if a command is not found
 	const Command getCommand(const std::string &) const;
 
 	/// Get an array of all commands in the dictionary
