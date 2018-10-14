@@ -41,7 +41,7 @@
     <ClCompile Include="src\graphics\IGraphics.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\Vulkan.cpp">
+    <ClCompile Include="src\graphics\VulkanGraphics.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -64,9 +64,6 @@
     <ClInclude Include="src\Window.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\Vulkan.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\Graphics.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -74,6 +71,9 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\IGraphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\VulkanGraphics.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

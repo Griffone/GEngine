@@ -11,6 +11,6 @@
 #define GRAPHICS_ACTIVE_API	GRAPHICS_API_VULKAN
 
 #if GRAPHICS_ACTIVE_API == GRAPHICS_API_VULKAN
-#include "Vulkan.h"
+#include "VulkanGraphics.h"
 typedef VulkanGraphics Graphics;
 #endif // GRAPHICS_ACTIVE_API == GRAPHICS_API_VULKAN

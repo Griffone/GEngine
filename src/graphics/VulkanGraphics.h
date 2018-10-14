@@ -88,7 +88,7 @@ public:
 	~VulkanGraphics();
 
 	void load();
-	void draw();
+	void draw(float time);
 
 	static void initialize();
 	static void terminate();
@@ -119,7 +119,7 @@ private:
 	static VkInstance instance;
 	static VkDebugUtilsMessengerEXT callback;
 
-	size_t							currentFrame;
+	size_t							currentFrame = 0;
 	
 	VkPhysicalDevice				physicalDevice;
 	VkDevice						device;
@@ -138,6 +138,8 @@ private:
 
 	VkRenderPass					renderPass;
 	VkDescriptorSetLayout			descriptorSetLayout;
+	VkDescriptorPool				descriptorPool;
+	std::vector<VkDescriptorSet>	descriptorSets;
 	VkPipelineLayout				pipelineLayout;
 	VkPipeline						graphicsPipeline;
 
@@ -146,6 +148,8 @@ private:
 
 	VkBuffer						vertexBuffer, indexBuffer;
 	VkDeviceMemory					vertexBufferMemory, indexBufferMemory;
+	std::vector<VkBuffer>			uniformBuffers;
+	std::vector<VkDeviceMemory>		uniformBuffersMemory;
 
 	std::vector<VkSemaphore>		imageAvailableSemaphores, renderFinishedSemaphores;
 	std::vector<VkFence>			inFlightFences;
@@ -178,23 +182,30 @@ private:
 	void pickPhysicalDevice();
 	void createLogicalDevice();
 	
-	void createCommandPool();
-	void createVertexBuffer();
-	void createIndexBuffer();
-	void createCommandBuffers();
-	void createSyncObjects();
-
 	void createSwapchain();
 	void createImageViews();
 	void createRenderPass();
 	void createGraphicsPipeline();
 	void createFramebuffers();
 
+	void createDescriptorSetLayout();
+
+	void createCommandPool();
+	void createVertexBuffer();
+	void createIndexBuffer();
+	void createUniformBuffers();
+	void createDescriptorPool();
+	void createDescriptorSets();
+	void createCommandBuffers();
+	void createSyncObjects();
+
 
 	void cleanupSwapchain();
 	void cleanup();
 
 	void recreateSwapchain();
+
+	void updateUniformBuffer(uint32_t currentImage, float time);
 
 
 	static std::vector<VkPhysicalDevice> getPhysicalDevices();

@@ -6,6 +6,18 @@ const char * StrUtil::toCString(const String & string) {
 	return string.c_str();
 }
 
+bool StrUtil::parseFloat(const String &string, float *outFloat) {
+	try {
+		float f;
+		f = std::stof(string);
+		if (outFloat != nullptr)
+			*outFloat = f;
+		return true;
+	} catch (const std::exception &e) {
+		return false;
+	}
+}
+
 String & StrUtil::ltrim(String &string) {
 	string.erase(0, string.find_first_not_of(STRING_WHITESPACE));
 	return string;

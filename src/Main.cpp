@@ -14,6 +14,7 @@
 const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 
 bool alive = true;
+float speedModifier = 1.0f;
 Window *window;
 IGraphics *graphics = nullptr;
 
@@ -31,12 +32,17 @@ int main() {
 	// So I'll create a helper thread.
 	std::thread thread(console);
 
-	while (!window->shouldClose()) {
+	auto startTime = std::chrono::high_resolution_clock::now();
+
+	while (!window->shouldClose() && alive) {
 		window->pollEvents();
 
 		if (graphics != nullptr && window->isVisible()) {
 			// TODO: Draw stuff
-			graphics->draw();
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+			graphics->draw(time * speedModifier);
 		}
 	}
 
@@ -95,4 +101,12 @@ void Commands::vulkan(String &string) {
 
 	if (!window->isVisible())
 		window->setVisible(true);
+}
+
+void Commands::speed(String &string) {
+	float newSpeed;
+	if (StrUtil::parseFloat(string, &newSpeed))
+		speedModifier = newSpeed;
+	else
+		std::cout << "Please enter a valid number!" << std::endl;
 }

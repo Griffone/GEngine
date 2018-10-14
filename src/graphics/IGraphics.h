@@ -15,7 +15,7 @@ public:
 
 	// Will likely change in the future, as actual in-project pipeline for drawing is constructed
 	virtual void load() = 0;
-	virtual void draw() = 0;
+	virtual void draw(float time) = 0;
 
 protected:
 	Window &window;

@@ -100,7 +100,7 @@
     <ClCompile Include="src\console\CommandDictionary.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\graphics\IGraphics.cpp" />
-    <ClCompile Include="src\graphics\Vulkan.cpp" />
+    <ClCompile Include="src\graphics\VulkanGraphics.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\String.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -113,7 +113,7 @@
     <ClInclude Include="src\Global.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
     <ClInclude Include="src\graphics\IGraphics.h" />
-    <ClInclude Include="src\graphics\Vulkan.h" />
+    <ClInclude Include="src\graphics\VulkanGraphics.h" />
     <ClInclude Include="src\String.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
