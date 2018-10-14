@@ -3,3 +3,5 @@ Griffone's personal notes, some of which can be found in source code:
 * I use object references (object & name) if the function does not take ownership of the passed object. Passing a pointer (*) means the ownership is also passed.
 
 * I use class-like namespace for singleton objects instead of classes, simply because I prefer the syntax. The class overhead is laughable and namespace obstruct the lifetime of the object.
+
+* I use TODO to mark something to be done in near future and NOTE to note special behavior which might be interesting in near future.

@@ -12,6 +12,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{c2d4233c-e29e-4a3d-8f82-d82f87763fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a2e8a7cd-c8ff-4381-b557-94a30e5ac852}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -25,6 +31,18 @@
     </ClCompile>
     <ClCompile Include="src\console\CommandDictionary.cpp">
       <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\IGraphics.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\VulkanGraphics.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +60,21 @@
     </ClInclude>
     <ClInclude Include="src\console\CommandDictionary.h">
       <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Graphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\IGraphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\VulkanGraphics.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,6 +21,11 @@ namespace StrUtil {
 
 	const char *toCString(const String &);
 
+	/// Attempt to parse a float from the beginning of a given string
+	/// Returns true if succesful as well as modifying the pointed to float
+	/// Returns false if the function failed for any reason
+	bool parseFloat(const String &string, float *outFloat);
+
 	/// Remove preceding or trailing whitespaces from a string
 	/// Note: modifies the provided string
 	String &ltrim(String &);
