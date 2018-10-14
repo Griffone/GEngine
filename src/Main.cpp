@@ -14,8 +14,8 @@
 const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 
 bool alive = true;
-bool vulkanInitialized = false;
 Window *window;
+IGraphics *graphics = nullptr;
 
 void initialize();
 void cleanup();
@@ -34,9 +34,9 @@ int main() {
 	while (!window->shouldClose()) {
 		window->pollEvents();
 
-		if (vulkanInitialized && window->isVisible()) {
+		if (graphics != nullptr && window->isVisible()) {
 			// TODO: Draw stuff
-			Graphics::draw();
+			graphics->draw();
 		}
 	}
 
@@ -61,6 +61,9 @@ void initialize() {
 }
 
 void cleanup() {
+	if (graphics)
+		delete graphics;
+
 	if (window)
 		delete window;
 
@@ -84,11 +87,10 @@ void Commands::exit(String &) {
 }
 
 void Commands::vulkan(String &string) {
-	if (!vulkanInitialized) {
+	if (graphics == nullptr) {
 		std::cout << "Initializing vulkan." << std::endl;
 		Graphics::initialize();
-		Graphics::setupForWindow(*window);
-		vulkanInitialized = true;
+		graphics = new Graphics(*window);
 	}
 
 	if (!window->isVisible())

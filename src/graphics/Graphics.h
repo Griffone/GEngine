@@ -12,5 +12,5 @@
 
 #if GRAPHICS_ACTIVE_API == GRAPHICS_API_VULKAN
 #include "Vulkan.h"
-namespace Graphics = Vulkan;
+typedef VulkanGraphics Graphics;
 #endif // GRAPHICS_ACTIVE_API == GRAPHICS_API_VULKAN

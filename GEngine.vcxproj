@@ -99,6 +99,7 @@
     <ClCompile Include="src\CommonCommands.cpp" />
     <ClCompile Include="src\console\CommandDictionary.cpp" />
     <ClCompile Include="src\File.cpp" />
+    <ClCompile Include="src\graphics\IGraphics.cpp" />
     <ClCompile Include="src\graphics\Vulkan.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\String.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Global.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
+    <ClInclude Include="src\graphics\IGraphics.h" />
     <ClInclude Include="src\graphics\Vulkan.h" />
     <ClInclude Include="src\String.h" />
     <ClInclude Include="src\Window.h" />
@@ -120,11 +122,11 @@
   </ImportGroup>
   <!-- Custom Build stuff -->
   <Target Name="AfterBuild">
-    <Exec Command="compile_shaders.bat"/>
+    <Exec Command="compile_shaders.bat" />
     <ItemGroup>
       <ShaderBinaries Include="$(ProjectDir)src\shaders\*.spv" />
     </ItemGroup>
-    <Copy SourceFiles="@(ShaderBinaries)" DestinationFolder="$(ProjectDir)shaders"/>
+    <Copy SourceFiles="@(ShaderBinaries)" DestinationFolder="$(ProjectDir)shaders" />
     <Move SourceFiles="@(ShaderBinaries)" DestinationFolder="$(TargetDir)shaders" />
   </Target>
 </Project>

@@ -14,19 +14,11 @@
 
 #include <vector>
 
-#if USE_VULKAN
-class Window;
-
-namespace Vulkan {
-	extern void createSurface(Window &);
-}
-
-#endif // USE_VULKAN
 
 class Window {
 #if USE_VULKAN
-	friend void Vulkan::createSurface(Window &);
-#endif // USE_VULKAN
+	friend class VulkanGraphics;
+#endif
 public:
 	typedef void(*WindowCallback)(Window &);
 

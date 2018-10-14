@@ -35,11 +35,14 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\Vulkan.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\File.cpp">
       <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\IGraphics.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Vulkan.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +72,9 @@
     </ClInclude>
     <ClInclude Include="src\File.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\IGraphics.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
