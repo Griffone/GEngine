@@ -7,7 +7,7 @@
 #include <chrono>
 
 #ifdef NDEBUG
-bool VulkanGraphics::VALIDATION_LAYERS_ENABLED = false;
+const bool VulkanGraphics::VALIDATION_LAYERS_ENABLED = false;
 #else
 const bool VulkanGraphics::VALIDATION_LAYERS_ENABLED = true;
 #endif // NDEBUG
@@ -1050,7 +1050,7 @@ uint32_t VulkanGraphics::findMemoryType(uint32_t typeFilter, const VkMemoryPrope
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
-	for (auto i = 0; i < memProperties.memoryTypeCount; ++i) {
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
 		if ((typeFilter & (1 << i))
 			&& (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
 
