@@ -12,3 +12,8 @@ The first achievement was the initial Vulkan API based hardware-accelerated imag
 
 Then I added a texture to the quad:
 ![First textured quad](docs/textured_quad.png)
+
+After a little mode work I switched to loading a mesh. A simple cube is fairly boring, so I added basic diffuse lighting:
+![Lit cube](docs/lit_cube.png)
+
+At this point, having experienced minor rewrites to shaders causing significant refactors for rendering code, I realized Vulkan is great if you know exactly what you want to do. But for quick iteration it is somewhat poor due to immense verbosity.
