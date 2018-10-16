@@ -14,10 +14,13 @@
 
 #include <vector>
 
+namespace Graphics {
+	class Context;
+}
 
 class Window {
 #if USE_VULKAN
-	friend class VulkanGraphics;
+	friend Graphics::Context;
 #endif
 public:
 	typedef void(*WindowCallback)(Window &);

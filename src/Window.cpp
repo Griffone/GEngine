@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "graphics/Graphics.h"
+#include "graphics/Context.h"
 
 bool Window::initialized = false;
 

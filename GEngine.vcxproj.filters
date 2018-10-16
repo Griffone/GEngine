@@ -38,10 +38,19 @@
     <ClCompile Include="src\File.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\IGraphics.cpp">
+    <ClCompile Include="src\graphics\Mesh.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\VulkanGraphics.cpp">
+    <ClCompile Include="src\graphics\Object.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Texture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Context.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Vertex.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -64,16 +73,22 @@
     <ClInclude Include="src\Window.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\Graphics.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\File.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\IGraphics.h">
+    <ClInclude Include="src\graphics\Texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\VulkanGraphics.h">
+    <ClInclude Include="src\graphics\Object.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Mesh.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Context.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Vertex.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,7 +5,10 @@
 #include "CommonCommands.h"
 #include "Window.h"
 
-#include "graphics/Graphics.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include "graphics/Context.h"
 
 #include <thread>
 #include <iostream>
@@ -16,11 +19,15 @@ const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 bool alive = true;
 float speedModifier = 1.0f;
 Window *window;
-IGraphics *graphics = nullptr;
+Graphics::Context *graphics = nullptr;
+Graphics::Object *object = nullptr;
+Graphics::Mesh *mesh = nullptr;
+Graphics::Texture *texture = nullptr;
 
 void initialize();
 void cleanup();
 void console();
+void loadDefaults();
 
 // Program starts here.
 int main() {
@@ -38,11 +45,12 @@ int main() {
 		window->pollEvents();
 
 		if (graphics != nullptr && window->isVisible()) {
-			// TODO: Draw stuff
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-			graphics->draw(time * speedModifier);
+			object->setRotation({0.0f, time * speedModifier, 0.0f});
+
+			graphics->draw(*object);
 		}
 	}
 
@@ -67,13 +75,22 @@ void initialize() {
 }
 
 void cleanup() {
+	if (object)
+		delete object;
+
+	if (mesh)
+		delete mesh;
+
+	if (texture)
+		delete texture;
+
 	if (graphics)
 		delete graphics;
 
 	if (window)
 		delete window;
 
-	Graphics::terminate();
+	Graphics::Context::terminate();
 	Window::terminate();
 }
 
@@ -88,6 +105,38 @@ void console() {
 	}
 }
 
+void loadDefaults() {
+	std::vector<Graphics::Vertex> verts = {
+		{{-0.5f, 0.5f, -0.5f},	{1.0f, 0.0f}},
+		{{0.5f, 0.5f, -0.5f},	{0.0f, 0.0f}},
+		{{0.5f, 0.5f, 0.5f},	{0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.5f},	{1.0f, 1.0f}},
+
+		{{-0.5f, -0.5f, -0.5f},	{1.0f, 0.0f}},
+		{{0.5f, -0.5f, -0.5f},	{0.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.5f},	{0.0f, 1.0f}},
+		{{-0.5f, -0.5f, 0.5f},	{1.0f, 1.0f}}
+	};
+
+	std::vector<uint32_t> indices = {
+		0, 1, 2, 2, 3, 0,
+		4, 5, 6, 6, 7, 4
+	};
+
+	mesh = new Graphics::Mesh(*graphics, verts, indices);
+
+	int width, height, channels;
+	stbi_uc* pixels = stbi_load("data/textures/bricks.jpg", &width, &height, &channels, STBI_rgb_alpha);
+
+	if (!pixels)
+		throw std::runtime_error("Failed to load default texture!");
+
+	texture = new Graphics::Texture(*graphics, width, height, pixels);
+
+	object = new Graphics::Object(*mesh, *texture);
+	object->setScale({ 1.0f, 0.5f, 1.0f });
+}
+
 void Commands::exit(String &) {
 	alive = false;
 }
@@ -95,8 +144,9 @@ void Commands::exit(String &) {
 void Commands::vulkan(String &string) {
 	if (graphics == nullptr) {
 		std::cout << "Initializing vulkan." << std::endl;
-		Graphics::initialize();
-		graphics = new Graphics(*window);
+		Graphics::Context::initialize();
+		graphics = new Graphics::Context(*window);
+		loadDefaults();
 	}
 
 	if (!window->isVisible())
@@ -109,4 +159,8 @@ void Commands::speed(String &string) {
 		speedModifier = newSpeed;
 	else
 		std::cout << "Please enter a valid number!" << std::endl;
+}
+
+void Commands::load(String &) {
+	std::cout << "Command is under development!" << std::endl;
 }
