@@ -7,8 +7,6 @@
 
 using namespace Graphics;
 
-const char * const TEXTURE_NAME = "data/textures/bricks.jpg";
-const char * const MODEL_NAME = "data/models/cube.obj";
 const char * const SHADER_VERT_NAME = "data/shaders/basic_vert.spv";
 const char * const SHADER_FRAG_NAME = "data/shaders/basic_frag.spv";
 
@@ -62,8 +60,7 @@ Context::~Context() {
 	cleanup();
 }
 
-void Context::draw(Object &object) {
-	mutex.lock();
+void Context::draw(Scene &scene) {
 	vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
 	uint32_t imageIndex;
@@ -75,9 +72,9 @@ void Context::draw(Object &object) {
 	} else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 		throw std::runtime_error("Failed to acquire swap chain image!");
 
-	updateUniformBuffer(imageIndex, object);
-	updateDescriptorSet(descriptorSets[imageIndex], imageIndex, object);
-	recordCommandBuffer(commandBuffers[imageIndex], imageIndex, object);
+	updateUniformBuffer(imageIndex, scene);
+	updateDescriptorSet(descriptorSets[imageIndex], imageIndex, scene.object);
+	recordCommandBuffer(commandBuffers[imageIndex], imageIndex, scene);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -119,7 +116,6 @@ void Context::draw(Object &object) {
 		throw std::runtime_error("failed to present swap chain image!");
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-	mutex.unlock();
 }
 
 void Context::initialize() {
@@ -509,9 +505,8 @@ void Context::createGraphicsPipeline() {
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;	// Modes other than fill require enabling GPU feature
 	rasterizer.lineWidth = 1.0f;	// Line thickness in number of fragments, anything larger 1 requires enabling wideLines GPU feature
-	//rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizer.cullMode = VK_CULL_MODE_NONE;
-	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 	rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -625,21 +620,28 @@ void Context::createFramebuffers() {
 
 
 void Context::createDescriptorSetLayout() {
-	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+	VkDescriptorSetLayoutBinding vertexUboLayoutBinding = {};
+	vertexUboLayoutBinding.binding = 0;
+	vertexUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	vertexUboLayoutBinding.descriptorCount = 1;
+	vertexUboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	vertexUboLayoutBinding.pImmutableSamplers = nullptr; // Optional
 
-	VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-	samplerLayoutBinding.binding = 1;
-	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	samplerLayoutBinding.pImmutableSamplers = nullptr;
-	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	VkDescriptorSetLayoutBinding fragUboLayoutBinding = {};
+	fragUboLayoutBinding.binding = 1;
+	fragUboLayoutBinding.descriptorCount = 1;
+	fragUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	fragUboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	fragUboLayoutBinding.pImmutableSamplers = nullptr;
 
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+	VkDescriptorSetLayoutBinding textureSamplerBinding = {};
+	textureSamplerBinding.binding = 2;
+	textureSamplerBinding.descriptorCount = 1;
+	textureSamplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	textureSamplerBinding.pImmutableSamplers = nullptr;
+	textureSamplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	std::array<VkDescriptorSetLayoutBinding, 3> bindings = { vertexUboLayoutBinding, fragUboLayoutBinding, textureSamplerBinding };
 	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -663,21 +665,25 @@ void Context::createCommandPool() {
 }
 
 void Context::createUniformBuffers() {
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+	vertexUniformBuffers.resize(swapchainImages.size());
+	fragmentUniformBuffers.resize(swapchainImages.size());
+	vertexUniformBufferMemories.resize(swapchainImages.size());
+	fragmentUniformBufferMemories.resize(swapchainImages.size());
 
-	uniformBuffers.resize(swapchainImages.size());
-	uniformBuffersMemory.resize(swapchainImages.size());
-
-	for (auto i = 0; i < swapchainImages.size(); ++i)
-		createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+	for (auto i = 0; i < swapchainImages.size(); ++i) {
+		createBuffer(sizeof(VertexUBO), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, vertexUniformBuffers[i], vertexUniformBufferMemories[i]);
+		createBuffer(sizeof(FragmentUBO), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, fragmentUniformBuffers[i], fragmentUniformBufferMemories[i]);
+	}
 }
 
 void Context::createDescriptorPool() {
-	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+	std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(swapchainImages.size());
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[1].descriptorCount = static_cast<uint32_t>(swapchainImages.size());
+	poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolSizes[2].descriptorCount = static_cast<uint32_t>(swapchainImages.size());
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -766,8 +772,10 @@ void Context::cleanup() {
 	vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
 	for (auto i = 0; i < swapchainImages.size(); ++i) {
-		vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-		vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+		vkDestroyBuffer(device, vertexUniformBuffers[i], nullptr);
+		vkFreeMemory(device, vertexUniformBufferMemories[i], nullptr);
+		vkDestroyBuffer(device, fragmentUniformBuffers[i], nullptr);
+		vkFreeMemory(device, fragmentUniformBufferMemories[i], nullptr);
 	}
 
 	for (auto i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
@@ -796,17 +804,17 @@ void Context::recreateSwapchain() {
 }
 
 
-void Graphics::Context::recordCommandBuffer(const VkCommandBuffer &buffer, uint32_t currentImage, Object & object) {
+void Graphics::Context::recordCommandBuffer(const VkCommandBuffer &buffer, uint32_t currentImage, Scene & scene) {
 	beginRenderPassBuffer(buffer, currentImage);
 
-	VkBuffer vertexBuffers[] = { object.mesh.vertexBuffer };
+	VkBuffer vertexBuffers[] = { scene.object.mesh.vertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
 
 	vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
-	vkCmdBindIndexBuffer(buffer, object.mesh.indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(buffer, scene.object.mesh.indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentImage], 0, nullptr);
 
-	vkCmdDrawIndexed(buffer, static_cast<uint32_t>(object.mesh.indexCount), 1, 0, 0, 0);
+	vkCmdDrawIndexed(buffer, static_cast<uint32_t>(scene.object.mesh.indexCount), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(buffer);
 
@@ -815,17 +823,22 @@ void Graphics::Context::recordCommandBuffer(const VkCommandBuffer &buffer, uint3
 }
 
 void Graphics::Context::updateDescriptorSet(const VkDescriptorSet & descriptorSet, uint32_t currentImage, Object & object) {
-	VkDescriptorBufferInfo bufferInfo = {};
-	bufferInfo.buffer = uniformBuffers[currentImage];
-	bufferInfo.offset = 0;
-	bufferInfo.range = sizeof(UniformBufferObject);
+	VkDescriptorBufferInfo vertexBufferInfo = {};
+	vertexBufferInfo.buffer = vertexUniformBuffers[currentImage];
+	vertexBufferInfo.offset = 0;
+	vertexBufferInfo.range = sizeof(VertexUBO);
 
-	VkDescriptorImageInfo imageInfo = {};
-	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.imageView = object.texture.imageView;
-	imageInfo.sampler = object.texture.sampler;
+	VkDescriptorBufferInfo fragmentBufferInfo = {};
+	fragmentBufferInfo.buffer = fragmentUniformBuffers[currentImage];
+	fragmentBufferInfo.offset = 0;
+	fragmentBufferInfo.range = sizeof(FragmentUBO);
 
-	std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+	VkDescriptorImageInfo diffuseTextureInfo = {};
+	diffuseTextureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	diffuseTextureInfo.imageView = object.texture.imageView;
+	diffuseTextureInfo.sampler = object.texture.sampler;
+
+	std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
 	descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descriptorWrites[0].dstSet = descriptorSet;
@@ -833,31 +846,48 @@ void Graphics::Context::updateDescriptorSet(const VkDescriptorSet & descriptorSe
 	descriptorWrites[0].dstArrayElement = 0;
 	descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	descriptorWrites[0].descriptorCount = 1;
-	descriptorWrites[0].pBufferInfo = &bufferInfo;
+	descriptorWrites[0].pBufferInfo = &vertexBufferInfo;
 
 	descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descriptorWrites[1].dstSet = descriptorSet;
 	descriptorWrites[1].dstBinding = 1;
 	descriptorWrites[1].dstArrayElement = 0;
-	descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	descriptorWrites[1].descriptorCount = 1;
-	descriptorWrites[1].pImageInfo = &imageInfo;
+	descriptorWrites[1].pBufferInfo = &fragmentBufferInfo;
+
+	descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	descriptorWrites[2].dstSet = descriptorSet;
+	descriptorWrites[2].dstBinding = 2;
+	descriptorWrites[2].dstArrayElement = 0;
+	descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorWrites[2].descriptorCount = 1;
+	descriptorWrites[2].pImageInfo = &diffuseTextureInfo;
 
 	vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void Context::updateUniformBuffer(uint32_t currentImage, Object &object) {
-	projectionMatrix = glm::perspective(glm::radians(45.0f), swapchainExtent.width / (float)swapchainExtent.height, 0.1f, 10.0f);
-	projectionMatrix[1][1] *= -1; // This is because Vulkan's Y screen-space axis is flipped
-	viewMatrix = glm::lookAt(glm::vec3(2.0f), glm::vec3(0.0f), { 0.0f, 1.0f, 0.0f });
-
-	UniformBufferObject ubo = {};
-	ubo.MVP = projectionMatrix * viewMatrix * object.getTransformationMatrix();
+void Context::updateUniformBuffer(uint32_t currentImage, Scene &scene) {
+	scene.camera.setAspectRatio(((float)swapchainExtent.width) / swapchainExtent.height);
+	VertexUBO vertexUBO = {};
+	vertexUBO.MVP = scene.camera.getProjectionViewMatrix() * scene.object.getTransformationMatrix();
+	vertexUBO.lightPosition = scene.lightPosition;
+	vertexUBO.Model = scene.object.getTransformationMatrix();
+	vertexUBO.View = scene.camera.getViewMatrix();
 
 	void* data;
-	vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
-	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
+	vkMapMemory(device, vertexUniformBufferMemories[currentImage], 0, sizeof(vertexUBO), 0, &data);
+	memcpy(data, &vertexUBO, sizeof(vertexUBO));
+	vkUnmapMemory(device, vertexUniformBufferMemories[currentImage]);
+
+
+	FragmentUBO fragmentUBO = {};
+	fragmentUBO.lightColor = scene.lightColor;
+	fragmentUBO.ambientColor = scene.ambientColor;-
+
+	vkMapMemory(device, fragmentUniformBufferMemories[currentImage], 0, sizeof(fragmentUBO), 0, &data);
+	memcpy(data, &fragmentUBO, sizeof(fragmentUBO));
+	vkUnmapMemory(device, fragmentUniformBufferMemories[currentImage]);
 }
 
 

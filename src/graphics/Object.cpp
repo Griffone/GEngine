@@ -5,7 +5,7 @@
 
 using namespace Graphics;
 
-Object::Object(Mesh & mesh, Texture & texture) : mesh(mesh), texture(texture) {
+Object::Object(Mesh &mesh, Texture &texture) : mesh(mesh), texture(texture) {
 	
 }
 

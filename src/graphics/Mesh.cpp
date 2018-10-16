@@ -4,7 +4,7 @@
 
 using namespace Graphics;
 
-Graphics::Mesh::Mesh(Context & context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indexes) : context(context), indexCount(indexes.size()) {
+Graphics::Mesh::Mesh(Context & context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : context(context), indexCount(indices.size()) {
 	//	===========================================================
 	//	===					Create vertex buffer				===
 	//	===========================================================
@@ -28,10 +28,11 @@ Graphics::Mesh::Mesh(Context & context, const std::vector<Vertex>& vertices, con
 	//	===========================================================
 	//	===					Create index buffer					===
 	//	===========================================================
-	context.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	bufferSize = sizeof(uint32_t) * indices.size();
+	context.createBuffer(indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	vkMapMemory(context.device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, indexes.data(), (size_t)bufferSize);
+	memcpy(data, indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(context.device, stagingBufferMemory);
 
 	context.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);

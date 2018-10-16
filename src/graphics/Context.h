@@ -6,7 +6,7 @@
 	A single file as the rest of the program is supposed to be API-agnostic (at least in hopeful future).
 */
 
-#include "Object.h"
+#include "Scene.h"
 #include "Vertex.h"
 
 #include "../File.h"
@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <iostream>
 #include <map>
-#include <mutex>
 #include <optional>
 #include <set>
 #include <stdexcept>
@@ -46,8 +45,16 @@ namespace Graphics {
 			std::vector<VkPresentModeKHR> presentModes;
 		};
 
-		struct UniformBufferObject {
+		struct VertexUBO {
 			glm::mat4 MVP;
+			glm::mat4 Model;
+			glm::mat4 View;
+			glm::vec3 lightPosition;
+		};
+
+		struct FragmentUBO {
+			glm::vec3 lightColor;
+			glm::vec3 ambientColor;
 		};
 
 
@@ -58,7 +65,7 @@ namespace Graphics {
 		Context(Window &);
 		~Context();
 
-		void draw(Object &object);
+		void draw(Scene &object);
 
 		static void initialize();
 		static void terminate();
@@ -118,16 +125,11 @@ namespace Graphics {
 		VkDeviceMemory					depthImageMemory;
 		VkImageView						depthImageView;
 
-		std::vector<VkBuffer>			uniformBuffers;
-		std::vector<VkDeviceMemory>		uniformBuffersMemory;
+		std::vector<VkBuffer>			vertexUniformBuffers, fragmentUniformBuffers;
+		std::vector<VkDeviceMemory>		vertexUniformBufferMemories, fragmentUniformBufferMemories;
 
 		std::vector<VkSemaphore>		imageAvailableSemaphores, renderFinishedSemaphores;
 		std::vector<VkFence>			inFlightFences;
-
-
-		glm::mat4	viewMatrix, projectionMatrix;
-
-		std::mutex	mutex;
 
 		Window		&window;
 
@@ -181,9 +183,9 @@ namespace Graphics {
 		void recreateSwapchain();
 
 
-		void recordCommandBuffer(const VkCommandBuffer &commandBuffer, uint32_t currentImage, Object &object);
+		void recordCommandBuffer(const VkCommandBuffer &commandBuffer, uint32_t currentImage, Scene &scene);
 		void updateDescriptorSet(const VkDescriptorSet &descriptorSet, uint32_t currentImage, Object &object);
-		void updateUniformBuffer(uint32_t currentImage, Object &object);
+		void updateUniformBuffer(uint32_t currentImage, Scene &object);
 		
 
 		void transitionImageLayout(const VkImage &image, const VkFormat &format, const VkImageLayout &oldLayout, const VkImageLayout &newLayout);

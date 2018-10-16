@@ -8,10 +8,11 @@ setlocal EnableDelayedExpansion
 for %%f in (*.vert, *.frag) do (
     set x=%%~xf
     set name=%%~nf_!x:~1!.spv
-    %VULKAN_SDK%\Bin\glslangValidator.exe -V %%f -o !name! -s
+    %VULKAN_SDK%\Bin\glslangValidator.exe -V %%f -o !name!
     echo %%~nxf ^=^> !name!
 )
 echo Shaders compiled
+pause
 exit 0
 
 :NOENVVAR

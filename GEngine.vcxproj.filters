@@ -53,6 +53,12 @@
     <ClCompile Include="src\graphics\Vertex.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\Camera.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Scene.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Global.h">
@@ -89,6 +95,12 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\Vertex.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Camera.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Scene.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

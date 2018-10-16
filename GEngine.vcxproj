@@ -99,9 +99,11 @@
     <ClCompile Include="src\CommonCommands.cpp" />
     <ClCompile Include="src\console\CommandDictionary.cpp" />
     <ClCompile Include="src\File.cpp" />
+    <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\graphics\Context.cpp" />
     <ClCompile Include="src\graphics\Mesh.cpp" />
     <ClCompile Include="src\graphics\Object.cpp" />
+    <ClCompile Include="src\graphics\Scene.cpp" />
     <ClCompile Include="src\graphics\Texture.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -114,9 +116,11 @@
     <ClInclude Include="src\console\CommandDictionary.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Global.h" />
+    <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\Context.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\Object.h" />
+    <ClInclude Include="src\graphics\Scene.h" />
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\graphics\Vertex.h" />
     <ClInclude Include="src\String.h" />

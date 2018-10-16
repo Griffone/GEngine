@@ -8,6 +8,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 #include "graphics/Context.h"
 
 #include <thread>
@@ -23,6 +26,8 @@ Graphics::Context *graphics = nullptr;
 Graphics::Object *object = nullptr;
 Graphics::Mesh *mesh = nullptr;
 Graphics::Texture *texture = nullptr;
+Graphics::Scene *scene = nullptr;
+Graphics::Camera *camera = nullptr;
 
 void initialize();
 void cleanup();
@@ -48,9 +53,9 @@ int main() {
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-			object->setRotation({0.0f, time * speedModifier, 0.0f});
+			object->setRotation({0.0f, time * speedModifier * 0.2f, 0.0f});
 
-			graphics->draw(*object);
+			graphics->draw(*scene);
 		}
 	}
 
@@ -75,6 +80,12 @@ void initialize() {
 }
 
 void cleanup() {
+	if (camera)
+		delete camera;
+
+	if (scene)
+		delete scene;
+
 	if (object)
 		delete object;
 
@@ -106,24 +117,51 @@ void console() {
 }
 
 void loadDefaults() {
-	std::vector<Graphics::Vertex> verts = {
-		{{-0.5f, 0.5f, -0.5f},	{1.0f, 0.0f}},
-		{{0.5f, 0.5f, -0.5f},	{0.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.5f},	{0.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.5f},	{1.0f, 1.0f}},
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string err;
 
-		{{-0.5f, -0.5f, -0.5f},	{1.0f, 0.0f}},
-		{{0.5f, -0.5f, -0.5f},	{0.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.5f},	{0.0f, 1.0f}},
-		{{-0.5f, -0.5f, 0.5f},	{1.0f, 1.0f}}
-	};
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "data/models/cube.obj")) {
+		throw std::runtime_error(err);
+	}
 
-	std::vector<uint32_t> indices = {
-		0, 1, 2, 2, 3, 0,
-		4, 5, 6, 6, 7, 4
-	};
+	std::vector<Graphics::Vertex> vertices;
+	std::vector<uint32_t> indices;
 
-	mesh = new Graphics::Mesh(*graphics, verts, indices);
+	std::unordered_map<Graphics::Vertex, uint32_t> uniqueVertices = {};
+
+	for (const auto& shape : shapes) {
+		for (const auto& index : shape.mesh.indices) {
+			Graphics::Vertex vertex = {};
+
+			vertex.pos = {
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.normal = {
+				attrib.normals[3 * index.normal_index + 0],
+				attrib.normals[3 * index.normal_index + 1],
+				attrib.normals[3 * index.normal_index + 2]
+			};
+
+			vertex.texCoord = {
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			if (uniqueVertices.count(vertex) == 0) {
+				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+				vertices.push_back(vertex);
+			}
+
+			indices.push_back(uniqueVertices[vertex]);
+		}
+	}
+
+	mesh = new Graphics::Mesh(*graphics, vertices, indices);
 
 	int width, height, channels;
 	stbi_uc* pixels = stbi_load("data/textures/bricks.jpg", &width, &height, &channels, STBI_rgb_alpha);
@@ -134,7 +172,11 @@ void loadDefaults() {
 	texture = new Graphics::Texture(*graphics, width, height, pixels);
 
 	object = new Graphics::Object(*mesh, *texture);
-	object->setScale({ 1.0f, 0.5f, 1.0f });
+
+	camera = new Graphics::Camera({ 0.0f, 2.5f, -5.0f }, glm::vec3(0.0f), 45.0f);
+
+	scene = new Graphics::Scene(*camera, *object);
+	scene->lightPosition = { -2.0f, 2.0f, -3.0f };
 }
 
 void Commands::exit(String &) {
