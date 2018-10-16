@@ -12,6 +12,7 @@ namespace Commands {
 	extern void exit(String &);
 	extern void vulkan(String &);
 	extern void speed(String &);
+	extern void load(String &);
 
 	void commonList(String &);
 	void commonHelp(String &);
@@ -38,13 +39,18 @@ namespace Commands {
 		"change the speed of the animation",
 		"Usage: speed <speed> : set the animation speed multiplier to <speed>"
 	};
+	const CommandData COMMON_DATA_LOAD = {
+		"attempt to load a resource",
+		"Usage: load <resource. : try to load a given <resource>"
+	};
 
 	const Command COMMON_LIST[] = {
 		{ "exit", exit, COMMON_DATA_EXIT },
 		{ "list", commonList, COMMON_DATA_LIST },
 		{ "help", commonHelp, COMMON_DATA_HELP},
 		{ "vulkan", vulkan, COMMON_DATA_VULKAN },
-		{ "speed", speed, COMMON_DATA_SPEED }
+		{ "speed", speed, COMMON_DATA_SPEED },
+		{ "load", load, COMMON_DATA_LOAD }
 	};
 
 }

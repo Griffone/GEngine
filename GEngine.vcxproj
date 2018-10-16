@@ -56,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(GLM);$(GLFW)\include;$(STB);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(GLM);$(GLFW)\include;$(STB);$(TinyObjLoader);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -79,7 +79,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(GLM);$(GLFW)\include;$(STB);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(GLM);$(GLFW)\include;$(STB);$(TinyObjLoader);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -99,8 +99,13 @@
     <ClCompile Include="src\CommonCommands.cpp" />
     <ClCompile Include="src\console\CommandDictionary.cpp" />
     <ClCompile Include="src\File.cpp" />
-    <ClCompile Include="src\graphics\IGraphics.cpp" />
-    <ClCompile Include="src\graphics\VulkanGraphics.cpp" />
+    <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\graphics\Context.cpp" />
+    <ClCompile Include="src\graphics\Mesh.cpp" />
+    <ClCompile Include="src\graphics\Object.cpp" />
+    <ClCompile Include="src\graphics\Scene.cpp" />
+    <ClCompile Include="src\graphics\Texture.cpp" />
+    <ClCompile Include="src\graphics\Vertex.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\String.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -111,9 +116,13 @@
     <ClInclude Include="src\console\CommandDictionary.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Global.h" />
-    <ClInclude Include="src\graphics\Graphics.h" />
-    <ClInclude Include="src\graphics\IGraphics.h" />
-    <ClInclude Include="src\graphics\VulkanGraphics.h" />
+    <ClInclude Include="src\graphics\Camera.h" />
+    <ClInclude Include="src\graphics\Context.h" />
+    <ClInclude Include="src\graphics\Mesh.h" />
+    <ClInclude Include="src\graphics\Object.h" />
+    <ClInclude Include="src\graphics\Scene.h" />
+    <ClInclude Include="src\graphics\Texture.h" />
+    <ClInclude Include="src\graphics\Vertex.h" />
     <ClInclude Include="src\String.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
@@ -122,14 +131,15 @@
   </ImportGroup>
   <!-- Custom Build stuff -->
   <ItemGroup>
-    <Textures Include="$(ProjectDir)textures\*.jpg" />
+    <Textures Include="$(ProjectDir)data\textures\*.jpg" />
+    <Models Include="$(ProjectDir)data\models\*.obj" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Exec Command="compile_shaders.bat" />
     <ItemGroup>
-      <ShaderBinaries Include="$(ProjectDir)shaders\*.spv" />
+      <ShaderBinaries Include="$(ProjectDir)data\shaders\*.spv" />
     </ItemGroup>
-    <Copy SourceFiles="@(ShaderBinaries)" DestinationFolder="$(TargetDir)shaders" />
-    <Copy SourceFiles="@(Textures)" DestinationFolder="$(TargetDir)textures" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ShaderBinaries)" DestinationFolder="$(TargetDir)data\shaders" />
+    <Copy SourceFiles="@(Textures)" DestinationFolder="$(TargetDir)data\textures" SkipUnchangedFiles="true" />
   </Target>
 </Project>

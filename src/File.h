@@ -8,10 +8,19 @@
 
 #include "String.h"
 
+#include <exception>
 #include <fstream>
 #include <vector>
 
 namespace File {
+
+	struct FileException : std::exception {
+		FileException(const String &reason);
+
+		const char * what() const throw ();
+
+		const String reason;
+	};
 
 	/// Read a given file as a binary.
 	/// Will allocate a vector exactly the size of the file and read file data into it.
