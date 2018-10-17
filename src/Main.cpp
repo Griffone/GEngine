@@ -20,7 +20,7 @@
 const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 
 bool alive = true;
-float speedModifier = 0.0f;
+float speedModifier = 1.0f;
 Window *window;
 Graphics::Context *graphics = nullptr;
 Graphics::Object *object = nullptr;
@@ -34,6 +34,12 @@ void initialize();
 void cleanup();
 void console();
 void loadDefaults();
+
+
+const char * const MESH_FILE = "data/models/cube.obj";
+const char * const DIFFUSE_TEXTURE_FILE = "data/textures/bricks.jpg";
+const char * const NORMAL_MAP_FILE = "data/textures/bricks_norm.jpg";
+
 
 // Program starts here.
 int main() {
@@ -55,7 +61,7 @@ int main() {
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 			scene->lightPosition = scene->camera.getPosition();
-			object->setRotation({0.0f, 1.0f + time * speedModifier / 5.0f, 0.0f});
+			object->setRotation({0.0f, time * speedModifier / 5.0f, 0.0f});
 
 			graphics->draw(*scene);
 		}
@@ -127,7 +133,7 @@ void loadMesh() {
 	std::vector<tinyobj::material_t> materials;
 	std::string err;
 
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, "data/models/cube.obj")) {
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, MESH_FILE)) {
 		throw std::runtime_error(err);
 	}
 
@@ -154,7 +160,7 @@ void loadMesh() {
 
 			vertex.texCoord = {
 				attrib.texcoords[2 * index.texcoord_index + 0],
-				attrib.texcoords[2 * index.texcoord_index + 1]
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
 			};
 
 			if (uniqueVertices.count(vertex) == 0) {
@@ -179,7 +185,7 @@ void loadMesh() {
 
 		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 		glm::vec3 tangent = glm::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r);
-		glm::vec3 bitangent = -glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
+		glm::vec3 bitangent = glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
 
 		v2.tangent = v1.tangent = v0.tangent = tangent;
 		v2.bitangent = v1.bitangent = v0.bitangent = bitangent;
@@ -192,14 +198,14 @@ void loadDefaults() {
 	loadMesh();
 
 	int width, height, channels;
-	stbi_uc* pixels = stbi_load("data/textures/arrow.jpg", &width, &height, &channels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(DIFFUSE_TEXTURE_FILE, &width, &height, &channels, STBI_rgb_alpha);
 	if (!pixels)
 		throw std::runtime_error("Failed to load default texture!");
 
 	texture = new Graphics::Texture(*graphics, width, height, pixels);
 
 
-	pixels = stbi_load("data/textures/bricks_norm.jpg", &width, &height, &channels, STBI_rgb_alpha);
+	pixels = stbi_load(NORMAL_MAP_FILE, &width, &height, &channels, STBI_rgb_alpha);
 	if (!pixels)
 		throw std::runtime_error("Failed to load default texture!");
 
