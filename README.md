@@ -2,7 +2,11 @@
 
 [Griffone's](https://github.com/Griffone) passion and experimentation project.
 
+![Demo screenshot](docs/clearer_normalmap.png)
+
 Initially planned as a multi-purpose hardware-accelerated skillset demo with somewhat clear development history. Secondary goal was to create a platform from which to jump from for other projects.
+
+<details><summary>History</summary>
 
 The first achievement was the initial Vulkan API based hardware-accelerated image rendering:
 
@@ -18,5 +22,6 @@ After a little mode work I switched to loading a mesh. A simple cube is fairly b
 
 At this point, having experienced minor rewrites to shaders causing significant refactors for rendering code, I realized Vulkan is great if you know exactly what you want to do. But for quick iteration it is somewhat poor due to immense verbosity.
 
-Finally I achieved something that looked remarkable, normal mapping!
+Finally I achieved something that looked remarkable: normal mapping!
 ![Normally mapped cube](docs/normal_mapped.png)
+</details>
