@@ -37,7 +37,7 @@ void loadDefaults();
 void processInput(float deltaT);
 
 
-const char * const MESH_FILE = "data/models/sphere.obj";
+const char * const MESH_FILE = "data/models/cube.obj";
 const char * const DIFFUSE_TEXTURE_FILE = "data/textures/bricks.jpg";
 const char * const NORMAL_MAP_FILE = "data/textures/bricks_norm.jpg";
 
@@ -63,8 +63,6 @@ int main() {
 			float deltaT = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastTime).count();
 
 			processInput(deltaT);
-
-			scene->lightPosition = scene->camera.getPosition();
 
 			graphics->draw(*scene);
 		}
@@ -220,6 +218,7 @@ void loadDefaults() {
 	camera = new Graphics::Camera({ 0.0f, 2.0f, -5.0f }, glm::vec3(0.0f), 45.0f);
 
 	scene = new Graphics::Scene(*camera, *object);
+	scene->lightPosition = { 1.1f, 1.1f, -1.1f };
 }
 
 void processInput(float deltaT) {
@@ -253,6 +252,10 @@ void processInput(float deltaT) {
 	delta = fwd + up + right;
 	camera->move(delta * deltaT * speedModifier * 4.0f);
 	camera->setTarget(glm::vec3(0.0f));
+
+
+	if (window->getKey(GLFW_KEY_SPACE) == GLFW_PRESS)
+		scene->lightPosition = camera->getPosition();
 }
 
 void Commands::exit(String &) {
