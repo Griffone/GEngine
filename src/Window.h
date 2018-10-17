@@ -37,6 +37,8 @@ public:
 	bool isVisible() const;
 	bool isMinimized() const;
 
+	int getKey(int key);
+
 	/// Set the visibility of the window to <param>
 	void setVisible(bool);
 

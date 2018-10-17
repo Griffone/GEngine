@@ -34,6 +34,7 @@ void initialize();
 void cleanup();
 void console();
 void loadDefaults();
+void processInput(float deltaT);
 
 
 const char * const MESH_FILE = "data/models/cube.obj";
@@ -51,17 +52,17 @@ int main() {
 	// So I'll create a helper thread.
 	std::thread thread(console);
 
-	auto startTime = std::chrono::high_resolution_clock::now();
-
 	while (!window->shouldClose() && alive) {
 		window->pollEvents();
+		
+		auto lastTime = std::chrono::high_resolution_clock::now();
 
 		if (graphics != nullptr && window->isVisible()) {
 			auto currentTime = std::chrono::high_resolution_clock::now();
-			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-			scene->lightPosition = scene->camera.getPosition();
-			object->setRotation({0.0f, time * speedModifier / 5.0f, 0.0f});
+			float deltaT = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastTime).count();
+
+			processInput(deltaT);
 
 			graphics->draw(*scene);
 		}
@@ -217,6 +218,44 @@ void loadDefaults() {
 	camera = new Graphics::Camera({ 0.0f, 2.0f, -5.0f }, glm::vec3(0.0f), 45.0f);
 
 	scene = new Graphics::Scene(*camera, *object);
+	scene->lightPosition = { 1.1f, 1.1f, -1.1f };
+}
+
+void processInput(float deltaT) {
+	glm::vec3 fwd = scene->camera.getLookVector();
+	fwd = glm::normalize(fwd);
+
+	glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+	glm::vec3 right = glm::cross(fwd, up);
+
+	// this is because currently we just rotate
+	up = glm::cross(right, fwd);
+
+	glm::vec3 delta(0.0f);
+
+	if (window->getKey(GLFW_KEY_W) == GLFW_PRESS)
+		delta.y += 1.0f;
+	if (window->getKey(GLFW_KEY_S) == GLFW_PRESS)
+		delta.y -= 1.0f;
+	if (window->getKey(GLFW_KEY_D) == GLFW_PRESS)
+		delta.x += 1.0f;
+	if (window->getKey(GLFW_KEY_A) == GLFW_PRESS)
+		delta.x -= 1.0f;
+	if (window->getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		delta.z += 1.0f;
+	if (window->getKey(GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		delta.z -= 1.0f;
+
+	fwd *= delta.z;
+	up *= delta.y;
+	right *= delta.x;
+	delta = fwd + up + right;
+	camera->move(delta * deltaT * speedModifier * 4.0f);
+	camera->setTarget(glm::vec3(0.0f));
+
+
+	if (window->getKey(GLFW_KEY_SPACE) == GLFW_PRESS)
+		scene->lightPosition = camera->getPosition();
 }
 
 void Commands::exit(String &) {

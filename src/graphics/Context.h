@@ -47,17 +47,17 @@ namespace Graphics {
 
 		struct VertexUBO {
 			glm::mat4 modelViewProjection;
-			glm::mat4 normal;
 			glm::mat4 model;
 			glm::mat4 view;
+			glm::mat4 normal;
 
-			glm::vec3 viewPosition;
-			glm::vec3 lightPosition;
+			glm::vec4 lightPosition;
+			glm::vec4 viewPosition;
 		};
 
 		struct FragmentUBO {
-			glm::vec3 lightColor;
-			glm::vec3 ambientColor;
+			glm::vec4 lightColor;
+			glm::vec4 ambientColor;
 		};
 
 
