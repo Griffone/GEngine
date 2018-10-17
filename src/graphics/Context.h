@@ -46,9 +46,12 @@ namespace Graphics {
 		};
 
 		struct VertexUBO {
-			glm::mat4 MVP;
-			glm::mat4 Model;
-			glm::mat4 View;
+			glm::mat4 modelViewProjection;
+			glm::mat4 normal;
+			glm::mat4 model;
+			glm::mat4 view;
+
+			glm::vec3 viewPosition;
 			glm::vec3 lightPosition;
 		};
 

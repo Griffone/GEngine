@@ -20,12 +20,13 @@
 const int PHYSICAL_DEVICE_NAME_LENGTH = 20;
 
 bool alive = true;
-float speedModifier = 1.0f;
+float speedModifier = 0.0f;
 Window *window;
 Graphics::Context *graphics = nullptr;
 Graphics::Object *object = nullptr;
 Graphics::Mesh *mesh = nullptr;
 Graphics::Texture *texture = nullptr;
+Graphics::Texture *normalMap = nullptr;
 Graphics::Scene *scene = nullptr;
 Graphics::Camera *camera = nullptr;
 
@@ -53,7 +54,8 @@ int main() {
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-			object->setRotation({0.0f, time * speedModifier * 0.2f, 0.0f});
+			scene->lightPosition = scene->camera.getPosition();
+			object->setRotation({0.0f, 1.0f + time * speedModifier / 5.0f, 0.0f});
 
 			graphics->draw(*scene);
 		}
@@ -92,6 +94,9 @@ void cleanup() {
 	if (mesh)
 		delete mesh;
 
+	if (normalMap)
+		delete normalMap;
+
 	if (texture)
 		delete texture;
 
@@ -116,7 +121,7 @@ void console() {
 	}
 }
 
-void loadDefaults() {
+void loadMesh() {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -149,7 +154,7 @@ void loadDefaults() {
 
 			vertex.texCoord = {
 				attrib.texcoords[2 * index.texcoord_index + 0],
-				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+				attrib.texcoords[2 * index.texcoord_index + 1]
 			};
 
 			if (uniqueVertices.count(vertex) == 0) {
@@ -161,22 +166,51 @@ void loadDefaults() {
 		}
 	}
 
+	for (auto i = 0; i < indices.size(); i += 3) {
+		Graphics::Vertex &v0 = vertices[indices[i + 0]];
+		Graphics::Vertex &v1 = vertices[indices[i + 1]];
+		Graphics::Vertex &v2 = vertices[indices[i + 2]];
+
+		glm::vec3 deltaPos1 = v1.pos - v0.pos;
+		glm::vec3 deltaPos2 = v2.pos - v0.pos;
+
+		glm::vec2 deltaUV1 = v1.texCoord - v0.texCoord;
+		glm::vec2 deltaUV2 = v2.texCoord - v0.texCoord;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		glm::vec3 tangent = glm::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r);
+		glm::vec3 bitangent = -glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
+
+		v2.tangent = v1.tangent = v0.tangent = tangent;
+		v2.bitangent = v1.bitangent = v0.bitangent = bitangent;
+	}
+
 	mesh = new Graphics::Mesh(*graphics, vertices, indices);
+}
+
+void loadDefaults() {
+	loadMesh();
 
 	int width, height, channels;
-	stbi_uc* pixels = stbi_load("data/textures/bricks.jpg", &width, &height, &channels, STBI_rgb_alpha);
-
+	stbi_uc* pixels = stbi_load("data/textures/arrow.jpg", &width, &height, &channels, STBI_rgb_alpha);
 	if (!pixels)
 		throw std::runtime_error("Failed to load default texture!");
 
 	texture = new Graphics::Texture(*graphics, width, height, pixels);
 
-	object = new Graphics::Object(*mesh, *texture);
 
-	camera = new Graphics::Camera({ 0.0f, 2.5f, -5.0f }, glm::vec3(0.0f), 45.0f);
+	pixels = stbi_load("data/textures/bricks_norm.jpg", &width, &height, &channels, STBI_rgb_alpha);
+	if (!pixels)
+		throw std::runtime_error("Failed to load default texture!");
+
+	normalMap = new Graphics::Texture(*graphics, width, height, pixels);
+
+
+	object = new Graphics::Object(*mesh, *texture, *normalMap);
+
+	camera = new Graphics::Camera({ 0.0f, 2.0f, -5.0f }, glm::vec3(0.0f), 45.0f);
 
 	scene = new Graphics::Scene(*camera, *object);
-	scene->lightPosition = { -2.0f, 2.0f, -3.0f };
 }
 
 void Commands::exit(String &) {

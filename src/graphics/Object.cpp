@@ -5,9 +5,7 @@
 
 using namespace Graphics;
 
-Object::Object(Mesh &mesh, Texture &texture) : mesh(mesh), texture(texture) {
-	
-}
+Object::Object(Mesh &mesh, Texture &diffuseTexture, Texture &normalMap) : mesh(mesh), diffuseTexture(diffuseTexture), normalMap(normalMap) {}
 
 void Object::setScale(const glm::vec3 &s) {
 	scale = s;

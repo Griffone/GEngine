@@ -13,6 +13,8 @@ namespace Graphics {
 		void setFOV(float);
 		void setAspectRatio(float);
 
+		glm::vec3 getPosition() const;
+
 		glm::mat4 getProjectionViewMatrix();
 		glm::mat4 getViewMatrix();
 

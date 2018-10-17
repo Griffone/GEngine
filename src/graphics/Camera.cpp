@@ -30,7 +30,7 @@ glm::mat4 Graphics::Camera::getProjectionViewMatrix() {
 			viewMatrix = glm::lookAt(position, target, { 0.0f, 1.0f, 0.0f });
 			viewIsCorrect = true;
 		}
-		pvMatrix = glm::perspective(fov, aspectRatio, 0.1f, 10.0f) * viewMatrix;
+		pvMatrix = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 10.0f) * viewMatrix;
 		pvIsCorrect = true;
 	}
 	return pvMatrix;
@@ -47,5 +47,9 @@ glm::mat4 Graphics::Camera::getViewMatrix() {
 void Graphics::Camera::setAspectRatio(float _aspectRatio) {
 	pvIsCorrect = pvIsCorrect && aspectRatio == _aspectRatio;
 	aspectRatio = _aspectRatio;
+}
+
+glm::vec3 Graphics::Camera::getPosition() const {
+	return position;
 }
 

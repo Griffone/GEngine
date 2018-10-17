@@ -634,14 +634,21 @@ void Context::createDescriptorSetLayout() {
 	fragUboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 	fragUboLayoutBinding.pImmutableSamplers = nullptr;
 
-	VkDescriptorSetLayoutBinding textureSamplerBinding = {};
-	textureSamplerBinding.binding = 2;
-	textureSamplerBinding.descriptorCount = 1;
-	textureSamplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	textureSamplerBinding.pImmutableSamplers = nullptr;
-	textureSamplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	VkDescriptorSetLayoutBinding diffuseTextureSamplerBinding = {};
+	diffuseTextureSamplerBinding.binding = 2;
+	diffuseTextureSamplerBinding.descriptorCount = 1;
+	diffuseTextureSamplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	diffuseTextureSamplerBinding.pImmutableSamplers = nullptr;
+	diffuseTextureSamplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-	std::array<VkDescriptorSetLayoutBinding, 3> bindings = { vertexUboLayoutBinding, fragUboLayoutBinding, textureSamplerBinding };
+	VkDescriptorSetLayoutBinding normalMapSamplerBinding = {};
+	normalMapSamplerBinding.binding = 3;
+	normalMapSamplerBinding.descriptorCount = 1;
+	normalMapSamplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	normalMapSamplerBinding.pImmutableSamplers = nullptr;
+	normalMapSamplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	std::array<VkDescriptorSetLayoutBinding, 4> bindings = { vertexUboLayoutBinding, fragUboLayoutBinding, diffuseTextureSamplerBinding, normalMapSamplerBinding };
 	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -835,10 +842,15 @@ void Graphics::Context::updateDescriptorSet(const VkDescriptorSet & descriptorSe
 
 	VkDescriptorImageInfo diffuseTextureInfo = {};
 	diffuseTextureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	diffuseTextureInfo.imageView = object.texture.imageView;
-	diffuseTextureInfo.sampler = object.texture.sampler;
+	diffuseTextureInfo.imageView = object.diffuseTexture.imageView;
+	diffuseTextureInfo.sampler = object.diffuseTexture.sampler;
 
-	std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
+	VkDescriptorImageInfo normalMapInfo = {};
+	normalMapInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	normalMapInfo.imageView = object.normalMap.imageView;
+	normalMapInfo.sampler = object.normalMap.sampler;
+
+	std::array<VkWriteDescriptorSet, 4> descriptorWrites = {};
 
 	descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descriptorWrites[0].dstSet = descriptorSet;
@@ -864,16 +876,27 @@ void Graphics::Context::updateDescriptorSet(const VkDescriptorSet & descriptorSe
 	descriptorWrites[2].descriptorCount = 1;
 	descriptorWrites[2].pImageInfo = &diffuseTextureInfo;
 
+	descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	descriptorWrites[3].dstSet = descriptorSet;
+	descriptorWrites[3].dstBinding = 3;
+	descriptorWrites[3].dstArrayElement = 0;
+	descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorWrites[3].descriptorCount = 1;
+	descriptorWrites[3].pImageInfo = &normalMapInfo;
+
 	vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
 void Context::updateUniformBuffer(uint32_t currentImage, Scene &scene) {
 	scene.camera.setAspectRatio(((float)swapchainExtent.width) / swapchainExtent.height);
 	VertexUBO vertexUBO = {};
-	vertexUBO.MVP = scene.camera.getProjectionViewMatrix() * scene.object.getTransformationMatrix();
+	vertexUBO.modelViewProjection = scene.camera.getProjectionViewMatrix() * scene.object.getTransformationMatrix();
+	vertexUBO.model = scene.object.getTransformationMatrix();
+	vertexUBO.normal = glm::transpose(glm::inverse(glm::mat3(vertexUBO.model)));
+	vertexUBO.view = scene.camera.getViewMatrix();
+
+	vertexUBO.viewPosition = scene.camera.getPosition();
 	vertexUBO.lightPosition = scene.lightPosition;
-	vertexUBO.Model = scene.object.getTransformationMatrix();
-	vertexUBO.View = scene.camera.getViewMatrix();
 
 	void* data;
 	vkMapMemory(device, vertexUniformBufferMemories[currentImage], 0, sizeof(vertexUBO), 0, &data);
@@ -883,7 +906,7 @@ void Context::updateUniformBuffer(uint32_t currentImage, Scene &scene) {
 
 	FragmentUBO fragmentUBO = {};
 	fragmentUBO.lightColor = scene.lightColor;
-	fragmentUBO.ambientColor = scene.ambientColor;-
+	fragmentUBO.ambientColor = scene.ambientColor;
 
 	vkMapMemory(device, fragmentUniformBufferMemories[currentImage], 0, sizeof(fragmentUBO), 0, &data);
 	memcpy(data, &fragmentUBO, sizeof(fragmentUBO));
