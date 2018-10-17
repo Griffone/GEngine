@@ -10,7 +10,7 @@ namespace Graphics {
 	class Object {
 		friend Context;
 	public:
-		Object(Mesh &mesh, Texture &texture);
+		Object(Mesh &mesh, Texture &diffuseTexture, Texture &normalMap);
 		~Object() = default;
 
 		/// Set object's scaling factor
@@ -22,7 +22,7 @@ namespace Graphics {
 
 		glm::mat4 getTransformationMatrix();
 	private:
-		Texture & texture;
+		Texture & diffuseTexture, &normalMap;
 		Mesh & mesh;
 
 		bool transformationMatrixIsCorrect = false;;
