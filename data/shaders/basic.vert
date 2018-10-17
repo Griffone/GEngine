@@ -4,12 +4,12 @@
 
 layout(binding = 0) uniform UniformBufferObject {
     mat4 modelViewProjection;
-    mat3 normal;
     mat4 model;
     mat4 view;
-    
-    vec3 lightPos;
-    vec3 viewPos;
+    mat4 normal;
+
+    vec4 lightPos;
+    vec4 viewPos;
 } ubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -25,6 +25,8 @@ layout(location = 0) out VertexShaderOutput {
     vec3 tangentLightPos;
     vec3 tangentViewPos;
     vec3 tangentFragPos;
+
+    vec3 test;
 } vso;
 /*
 layout(location = 0) out vec2 fragTexCoord;
@@ -41,16 +43,18 @@ void main() {
     gl_Position = ubo.modelViewProjection * vec4(inPosition, 1);
     gl_Position.y = -gl_Position.y;
 
-    vec3 tangent = normalize(ubo.normal * inTangent);
-    vec3 bitangent = normalize(ubo.normal * inBitangent);
-    vec3 normal = normalize(ubo.normal * inNormal);
+    mat3 normalMat = mat3(ubo.normal);
+
+    vec3 tangent = normalize(normalMat * inTangent);
+    vec3 bitangent = normalize(normalMat * inBitangent);
+    vec3 normal = normalize(normalMat * inNormal);
 
     mat3 TBN = transpose(mat3(tangent, bitangent, normal));
 
     vso.fragPosition = vec3(ubo.model * vec4(inPosition, 1));
     vso.texCoords = inTexCoord;
 
-    vso.tangentLightPos = TBN * ubo.lightPos;
-    vso.tangentViewPos = TBN * ubo.viewPos;
+    vso.tangentLightPos = TBN * ubo.lightPos.xyz;
+    vso.tangentViewPos = TBN * ubo.viewPos.xyz;
     vso.tangentFragPos = TBN * vso.fragPosition;
 }

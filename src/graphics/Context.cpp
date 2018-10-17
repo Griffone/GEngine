@@ -892,11 +892,11 @@ void Context::updateUniformBuffer(uint32_t currentImage, Scene &scene) {
 	VertexUBO vertexUBO = {};
 	vertexUBO.modelViewProjection = scene.camera.getProjectionViewMatrix() * scene.object.getTransformationMatrix();
 	vertexUBO.model = scene.object.getTransformationMatrix();
-	vertexUBO.normal = glm::transpose(glm::inverse(glm::mat3(vertexUBO.model)));
 	vertexUBO.view = scene.camera.getViewMatrix();
+	vertexUBO.normal = glm::transpose(glm::inverse(glm::mat3(vertexUBO.model)));
 
-	vertexUBO.viewPosition = scene.camera.getPosition();
-	vertexUBO.lightPosition = scene.lightPosition;
+	vertexUBO.lightPosition = glm::vec4(scene.lightPosition, 1.0f);
+	vertexUBO.viewPosition = glm::vec4(scene.camera.getPosition(), 1.0f);
 
 	void* data;
 	vkMapMemory(device, vertexUniformBufferMemories[currentImage], 0, sizeof(vertexUBO), 0, &data);
@@ -905,8 +905,8 @@ void Context::updateUniformBuffer(uint32_t currentImage, Scene &scene) {
 
 
 	FragmentUBO fragmentUBO = {};
-	fragmentUBO.lightColor = scene.lightColor;
-	fragmentUBO.ambientColor = scene.ambientColor;
+	fragmentUBO.lightColor = glm::vec4(scene.lightColor, 1.0f);
+	fragmentUBO.ambientColor = glm::vec4(scene.ambientColor, 1.0f);
 
 	vkMapMemory(device, fragmentUniformBufferMemories[currentImage], 0, sizeof(fragmentUBO), 0, &data);
 	memcpy(data, &fragmentUBO, sizeof(fragmentUBO));

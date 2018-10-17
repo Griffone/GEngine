@@ -39,6 +39,10 @@ bool Window::isMinimized() const {
 	return minimized;
 }
 
+int Window::getKey(int key) {
+	return glfwGetKey(window, key);
+}
+
 void Window::setVisible(bool _visible) {
 	if (visible == _visible) return;
 
