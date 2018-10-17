@@ -17,3 +17,6 @@ After a little mode work I switched to loading a mesh. A simple cube is fairly b
 ![Lit cube](docs/lit_cube.png)
 
 At this point, having experienced minor rewrites to shaders causing significant refactors for rendering code, I realized Vulkan is great if you know exactly what you want to do. But for quick iteration it is somewhat poor due to immense verbosity.
+
+Finally I achieved something that looked remarkable, normal mapping!
+![Normally mapped cube](docs/normal_mapped.png)
